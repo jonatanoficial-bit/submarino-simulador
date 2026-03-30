@@ -1,22 +1,85 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"/>
-<title>Submarine Commander</title>
-<link rel="stylesheet" href="styles.css"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Submarine Commander</title>
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-<h1>Submarine Commander</h1>
-<p>Version v1.1.0 | Build 2026-03-30 21:58:35 | Visual Integration Phase</p>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <h1>Submarine Commander</h1>
+        <div class="meta">Version v1.2.0 | Build 2026-03-30 22:18:01 | Premium Visual Integration Fix</div>
+      </div>
+      <div class="status-chip" id="loadStatus">Loading assets...</div>
+    </header>
 
-<h2>Selecionar Avatar</h2>
-<div id="avatars">
-  <img src="assets/images/avatars/captain.png" width="120"/>
-  <img src="assets/images/avatars/navigator.png" width="120"/>
-</div>
+    <main class="layout">
+      <aside class="sidebar">
+        <section class="panel">
+          <h2>Captain Avatar</h2>
+          <div class="avatar-grid">
+            <button class="avatar-btn selected" data-avatar="captain">
+              <img src="./assets/images/avatars/captain.png" alt="Captain" />
+              <span>Captain</span>
+            </button>
+            <button class="avatar-btn" data-avatar="navigator">
+              <img src="./assets/images/avatars/navigator.png" alt="Navigator" />
+              <span>Navigator</span>
+            </button>
+          </div>
+        </section>
 
-<canvas id="gameCanvas" width="800" height="400"></canvas>
+        <section class="panel">
+          <h2>Combat Panel</h2>
+          <div class="stats" id="statsPanel"></div>
+          <div class="button-row">
+            <button id="fireBtn" class="primary">Fire Torpedo</button>
+            <button id="sonarBtn" class="secondary">Pulse Sonar</button>
+          </div>
+          <div class="button-row">
+            <button id="surfaceBtn" class="secondary">Toggle Dive</button>
+            <button id="resetBtn" class="danger">Reset Mission</button>
+          </div>
+        </section>
 
-<script src="src/main.js"></script>
+        <section class="panel">
+          <h2>Integrated Assets</h2>
+          <ul class="asset-list">
+            <li>Captain avatar</li>
+            <li>Navigator avatar</li>
+            <li>Player submarine</li>
+            <li>Escort destroyer</li>
+            <li>Cargo ship</li>
+            <li>Enemy submarine</li>
+            <li>Torpedo effect</li>
+            <li>Explosion effect</li>
+            <li>Sonar effect</li>
+            <li>UI icons sheet</li>
+          </ul>
+        </section>
+      </aside>
+
+      <section class="main-panel">
+        <div class="hero panel">
+          <div class="hero-left">
+            <h2>Premium visual build fix</h2>
+            <p>Esta versão corrige o erro de drawImage, integra as imagens já criadas e usa fallback seguro caso algum asset falhe.</p>
+          </div>
+          <div class="hero-right">
+            <img src="./assets/images/ui/icons.png" alt="UI Icons" />
+          </div>
+        </div>
+
+        <div class="panel canvas-panel">
+          <canvas id="gameCanvas" width="1200" height="680"></canvas>
+          <div class="hint">Controls: Arrow keys move | Space fires torpedo | S sonar pulse | D dive/surface</div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="./src/main.js"></script>
 </body>
 </html>
