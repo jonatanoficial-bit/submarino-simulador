@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Iron Below Command</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <header class="topbar">
+      <div>
+        <h1 id="game-title">Iron Below Command</h1>
+        <p id="game-subtitle" class="subtitle"></p>
+      </div>
+      <div class="topbar-actions">
+        <label class="lang-select-wrap" for="language-select">
+          <span id="language-label"></span>
+          <select id="language-select" aria-label="Language Selector">
+            <option value="pt-BR">Português</option>
+            <option value="en">English</option>
+            <option value="es">Español</option>
+          </select>
+        </label>
+      </div>
+    </header>
+
+    <section class="build-banner">
+      <span id="version-display"></span>
+      <span id="build-display"></span>
+    </section>
+
+    <main class="main-layout">
+      <aside class="left-panel card">
+        <h2 id="captain-panel-title"></h2>
+        <div id="captain-summary" class="stack"></div>
+      </aside>
+
+      <section class="center-panel card">
+        <nav class="scene-tabs" id="scene-tabs"></nav>
+        <div id="scene-root" class="scene-root"></div>
+      </section>
+
+      <aside class="right-panel card">
+        <h2 id="systems-panel-title"></h2>
+        <div id="systems-summary" class="stack"></div>
+      </aside>
+    </main>
+
+    <footer class="footerbar card">
+      <div class="footer-grid">
+        <div>
+          <strong id="footer-objective-label"></strong>
+          <p id="footer-objective-value"></p>
+        </div>
+        <div>
+          <strong id="footer-status-label"></strong>
+          <p id="footer-status-value"></p>
+        </div>
+        <div>
+          <strong id="footer-phase-label"></strong>
+          <p id="footer-phase-value"></p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    window.__BUILD_INFO__ = {
+      version: "v0.1.0",
+      phase: "Phase 1 - Technical Foundation",
+      buildTimestamp: "2026-03-30 18:55:26 UTC"
+    };
+  </script>
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
