@@ -8,8 +8,8 @@ export default {
     "captain": "Capitao",
     "submarine": "Submarino",
     "quickStatus": "Status Rapido",
-    "lobbyTitle": "Base Naval - Operacoes Avancadas",
-    "lobbyDesc": "Esta fase adiciona IA inimiga melhor, mais variedade de missoes e submarinos, e mais tensao tatico-operacional.",
+    "lobbyTitle": "Base Naval - Versao Comercial Base",
+    "lobbyDesc": "A versao 1.0.0 fecha o primeiro ciclo do produto com onboarding, balanceamento inicial, audio sintetico base e estrutura pronta para publicacao.",
     "startOps": "Ir para Missoes",
     "goCareer": "Ver Carreira",
     "recentOps": "Operacoes Recentes",
@@ -23,7 +23,7 @@ export default {
     "promptPack": "Prompts de IA para imagens",
     "assets": "Planejamento de Assets",
     "tacticalMap": "Mapa Tatico",
-    "controls": "Setas: mover | Espaco: torpedo | Q/A: profundidade | S: submergir/emergir | R: reparar prioridade",
+    "controls": "Setas mover | Espaco torpedo | Q/A profundidade | S submergir | R reparo | Botao Tutorial para onboarding",
     "sonar": "Sonar",
     "systems": "Sistemas",
     "combat": "Combate",
@@ -36,7 +36,8 @@ export default {
     "depth": "Alternar Profundidade",
     "abort": "Abortar Missao",
     "save": "Salvar",
-    "reset": "Resetar Carreira"
+    "reset": "Resetar Carreira",
+    "tutorial": "Tutorial"
   },
   "en": {
     "menuLobby": "Naval Lobby",
@@ -47,8 +48,8 @@ export default {
     "captain": "Captain",
     "submarine": "Submarine",
     "quickStatus": "Quick Status",
-    "lobbyTitle": "Naval Base - Advanced Operations",
-    "lobbyDesc": "This phase adds better enemy AI, more mission variety, and more tactical-operational tension.",
+    "lobbyTitle": "Naval Base - Commercial Base Release",
+    "lobbyDesc": "Version 1.0.0 closes the first product cycle with onboarding, initial balancing, base synthesized audio and a structure ready for publishing.",
     "startOps": "Go to Missions",
     "goCareer": "View Career",
     "recentOps": "Recent Operations",
@@ -62,7 +63,7 @@ export default {
     "promptPack": "AI image prompts",
     "assets": "Asset Planning",
     "tacticalMap": "Tactical Map",
-    "controls": "Arrows: move | Space: torpedo | Q/A: depth | S: dive/surface | R: repair priority",
+    "controls": "Arrows move | Space torpedo | Q/A depth | S dive | R repair | Tutorial button for onboarding",
     "sonar": "Sonar",
     "systems": "Systems",
     "combat": "Combat",
@@ -75,7 +76,8 @@ export default {
     "depth": "Toggle Depth",
     "abort": "Abort Mission",
     "save": "Save",
-    "reset": "Reset Career"
+    "reset": "Reset Career",
+    "tutorial": "Tutorial"
   },
   "es": {
     "menuLobby": "Lobby Naval",
@@ -86,8 +88,8 @@ export default {
     "captain": "Capitan",
     "submarine": "Submarino",
     "quickStatus": "Estado Rapido",
-    "lobbyTitle": "Base Naval - Operaciones Avanzadas",
-    "lobbyDesc": "Esta fase agrega mejor IA enemiga, mas variedad de misiones y mas tension tactico-operacional.",
+    "lobbyTitle": "Base Naval - Lanzamiento Comercial Base",
+    "lobbyDesc": "La version 1.0.0 cierra el primer ciclo del producto con onboarding, balanceo inicial, audio sintetico base y estructura lista para publicacion.",
     "startOps": "Ir a Misiones",
     "goCareer": "Ver Carrera",
     "recentOps": "Operaciones Recientes",
@@ -101,7 +103,7 @@ export default {
     "promptPack": "Prompts de IA para imagenes",
     "assets": "Plan de Assets",
     "tacticalMap": "Mapa Tactico",
-    "controls": "Flechas: mover | Espacio: torpedo | Q/A: profundidad | S: sumergir/emergir | R: reparar prioridad",
+    "controls": "Flechas mover | Espacio torpedo | Q/A profundidad | S sumergir | R reparacion | Boton Tutorial para onboarding",
     "sonar": "Sonar",
     "systems": "Sistemas",
     "combat": "Combate",
@@ -114,6 +116,7 @@ export default {
     "depth": "Cambiar Profundidad",
     "abort": "Abortar Mision",
     "save": "Guardar",
-    "reset": "Reiniciar Carrera"
+    "reset": "Reiniciar Carrera",
+    "tutorial": "Tutorial"
   }
 };
