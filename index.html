@@ -4,75 +4,171 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Submarine Commander</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <div id="app">
     <header class="topbar">
       <div>
-        <h1 id="game-title">Submarine Commander</h1>
-        <p id="game-subtitle">Fase 5 - Danos e Reparos</p>
+        <h1>Submarine Commander</h1>
+        <div class="meta-line">
+          <span id="versionLabel">Version v0.9.0</span>
+          <span id="buildLabel">Build 2026-03-30 20:21:36</span>
+          <span id="phaseLabel">Advanced AI & Mission Variety</span>
+        </div>
       </div>
-      <div class="build-box">
-        <div id="version-label"></div>
-        <div id="build-label"></div>
+      <div class="topbar-actions">
+        <select id="languageSelect"></select>
+        <button id="saveBtn" class="secondary-btn">Save</button>
+        <button id="resetBtn" class="danger-btn">Reset Career</button>
       </div>
     </header>
 
     <main class="layout">
-      <section class="left-panel panel">
-        <h2 data-i18n="navigation">Navegação</h2>
-        <div class="stats-grid">
-          <div><span data-i18n="speed">Velocidade</span><strong id="speed-value"></strong></div>
-          <div><span data-i18n="depth">Profundidade</span><strong id="depth-value"></strong></div>
-          <div><span data-i18n="battery">Bateria</span><strong id="battery-value"></strong></div>
-          <div><span data-i18n="diesel">Diesel</span><strong id="diesel-value"></strong></div>
-          <div><span data-i18n="noise">Ruído</span><strong id="noise-value"></strong></div>
-          <div><span data-i18n="torpedoes">Torpedos</span><strong id="torpedo-value"></strong></div>
+      <aside class="sidebar card">
+        <nav class="menu">
+          <button data-screen="lobby" class="menu-btn active"></button>
+          <button data-screen="missions" class="menu-btn"></button>
+          <button data-screen="career" class="menu-btn"></button>
+          <button data-screen="intel" class="menu-btn"></button>
+          <button data-screen="assets" class="menu-btn"></button>
+        </nav>
+
+        <section class="side-section">
+          <h2 id="captainLabel"></h2>
+          <div id="captainCard" class="stat-grid"></div>
+        </section>
+
+        <section class="side-section">
+          <h2 id="submarineLabel"></h2>
+          <div id="submarineCard" class="stat-grid"></div>
+        </section>
+
+        <section class="side-section">
+          <h2 id="quickStatusLabel"></h2>
+          <div id="quickStatus" class="status-list"></div>
+        </section>
+      </aside>
+
+      <section class="main-content">
+        <div id="screen-lobby" class="screen active">
+          <div class="card hero-card">
+            <h2 id="lobbyTitle"></h2>
+            <p id="lobbyDesc"></p>
+            <div class="hero-actions">
+              <button id="goMissionsBtn" class="primary-btn"></button>
+              <button id="goCareerBtn" class="secondary-btn"></button>
+            </div>
+          </div>
+
+          <div class="grid-two">
+            <div class="card">
+              <h3 id="recentOpsTitle"></h3>
+              <div id="recentOpsContent" class="log-box"></div>
+            </div>
+            <div class="card">
+              <h3 id="tacticalSummaryTitle"></h3>
+              <div id="tacticalSummaryContent" class="log-box"></div>
+            </div>
+          </div>
         </div>
 
-        <h2 data-i18n="damage_status">Status do Submarino</h2>
-        <div id="damage-list" class="status-list"></div>
-
-        <h2 data-i18n="repair_queue">Fila de Reparo</h2>
-        <div id="repair-list" class="status-list"></div>
-      </section>
-
-      <section class="center-panel panel">
-        <canvas id="game-canvas" width="960" height="540"></canvas>
-        <div class="controls-hint">
-          <span>← → rumo</span>
-          <span>↑ ↓ velocidade</span>
-          <span>Q/A profundidade</span>
-          <span>S submergir/emergir</span>
-          <span>Espaço torpedo</span>
-          <span>R iniciar reparo</span>
-          <span>1-4 priorizar sistema</span>
-        </div>
-      </section>
-
-      <section class="right-panel panel">
-        <h2 data-i18n="sonar_contacts">Contatos do Sonar</h2>
-        <div id="contacts-list" class="status-list"></div>
-
-        <h2 data-i18n="captain_log">Log do Capitão</h2>
-        <div id="captain-log" class="log-box"></div>
-
-        <h2 data-i18n="mission">Missão</h2>
-        <div class="mission-box">
-          <p id="mission-text"></p>
-          <p id="mission-progress"></p>
+        <div id="screen-missions" class="screen">
+          <div class="grid-two mission-layout">
+            <div class="card">
+              <h2 id="missionsTitle"></h2>
+              <div id="missionList" class="mission-list"></div>
+            </div>
+            <div class="card">
+              <h2 id="missionBriefTitle"></h2>
+              <div id="missionBrief"></div>
+              <div class="panel-actions">
+                <button id="launchMissionBtn" class="primary-btn"></button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="toolbar">
-          <button id="lang-pt">PT</button>
-          <button id="lang-en">EN</button>
-          <button id="lang-es">ES</button>
+        <div id="screen-career" class="screen">
+          <div class="grid-two">
+            <div class="card">
+              <h2 id="careerTitle"></h2>
+              <div id="careerPanel" class="stat-grid big-grid"></div>
+            </div>
+            <div class="card">
+              <h2 id="shipsTitle"></h2>
+              <div id="shipList" class="ship-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="screen-intel" class="screen">
+          <div class="grid-two">
+            <div class="card">
+              <h2 id="intelTitle"></h2>
+              <div id="intelContent" class="log-box tall"></div>
+            </div>
+            <div class="card">
+              <h2 id="promptPackTitle"></h2>
+              <div id="promptPackContent" class="log-box tall"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="screen-assets" class="screen">
+          <div class="card">
+            <h2 id="assetsTitle"></h2>
+            <div id="assetsContent" class="log-box tall"></div>
+          </div>
+        </div>
+
+        <div id="screen-game" class="screen">
+          <div class="grid-game">
+            <div class="card game-area">
+              <div class="panel-heading">
+                <h2 id="tacticalMapTitle"></h2>
+                <div id="missionStatusBadge" class="badge"></div>
+              </div>
+              <canvas id="gameCanvas" width="960" height="540"></canvas>
+              <div class="controls-hint" id="controlsHint"></div>
+            </div>
+
+            <div class="card panel">
+              <h3 id="sonarTitle"></h3>
+              <div id="sonarContacts" class="log-box"></div>
+            </div>
+
+            <div class="card panel">
+              <h3 id="systemsTitle"></h3>
+              <div id="systemsPanel" class="stat-grid"></div>
+              <div class="repair-actions">
+                <button data-repair="hull" class="repair-btn"></button>
+                <button data-repair="engine" class="repair-btn"></button>
+                <button data-repair="sonar" class="repair-btn"></button>
+                <button data-repair="torpedoes" class="repair-btn"></button>
+              </div>
+            </div>
+
+            <div class="card panel">
+              <h3 id="combatTitle"></h3>
+              <div id="combatPanel" class="stat-grid"></div>
+              <div class="panel-actions">
+                <button id="fireBtn" class="primary-btn"></button>
+                <button id="toggleDepthBtn" class="secondary-btn"></button>
+                <button id="endMissionBtn" class="danger-btn"></button>
+              </div>
+            </div>
+
+            <div class="card panel full-span">
+              <h3 id="captainLogTitle"></h3>
+              <div id="captainLog" class="log-box tall"></div>
+            </div>
+          </div>
         </div>
       </section>
     </main>
   </div>
 
-  <script type="module" src="src/main.js"></script>
+  <script type="module" src="./src/main.js"></script>
 </body>
 </html>

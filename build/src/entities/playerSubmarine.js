@@ -1,4 +1,4 @@
-export function createPlayerSubmarine() {
+export function createPlayerSubmarine(loadout = {}) {
   return {
     x: 200,
     y: 270,
@@ -7,9 +7,9 @@ export function createPlayerSubmarine() {
     targetDepth: 40,
     depth: 40,
     submerged: true,
-    battery: 100,
-    diesel: 100,
-    torpedoes: 6,
+    battery: loadout.battery ?? 100,
+    diesel: loadout.diesel ?? 100,
+    torpedoes: loadout.torpedoes ?? 6,
     noise: 20,
     hullIntegrity: 100,
     systems: {

@@ -1,0 +1,1 @@
+Submarine Commander\nVersion: v0.9.0\nBuild: 2026-03-30 20:21:36\nPhase: Advanced AI & Mission Variety\n

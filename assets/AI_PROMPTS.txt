@@ -1,0 +1,16 @@
+# AI Image Prompt Pack - Phase 9
+
+[UI]
+WWII submarine simulator interface, premium tactical HUD, brushed metal, sonar glow, multilingual naval strategy game UI, dark blue palette, no logos
+
+[ESCORT]
+WWII escort destroyer, realistic naval rendering, top-down strategy game asset, ocean background, crisp silhouette
+
+[CARGO]
+WWII cargo ship, realistic top-down game asset, soft ocean shadow, high readability, commercial game style
+
+[ENEMY SUB]
+WWII hostile submarine, realistic top-down strategy asset, dark navy silhouette, clean background
+
+[CREW]
+submarine mechanic portrait, WWII naval crew, cinematic lighting, realistic, game asset

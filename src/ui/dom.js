@@ -1,5 +1,6 @@
 import { VERSION, PHASE, BUILD_TIME, MAX_LOG_ENTRIES } from '../core/config.js';
 import { getSystemStatus } from '../systems/damageSystem.js';
+import { getLocalizedMissionBriefing, getLocalizedMissionTitle } from '../systems/missionSystem.js';
 
 const versionLabel = document.getElementById('version-label');
 const buildLabel = document.getElementById('build-label');
@@ -13,26 +14,29 @@ const damageList = document.getElementById('damage-list');
 const repairList = document.getElementById('repair-list');
 const contactsList = document.getElementById('contacts-list');
 const logBox = document.getElementById('captain-log');
+const missionTitle = document.getElementById('mission-title');
 const missionText = document.getElementById('mission-text');
 const missionProgress = document.getElementById('mission-progress');
+const missionStatus = document.getElementById('mission-status');
+const commanderName = document.getElementById('commander-name');
+const commanderRank = document.getElementById('commander-rank');
+const commanderXp = document.getElementById('commander-xp');
+const commanderCredits = document.getElementById('commander-credits');
 
 let logEntries = [];
 
 export function initializeStaticLabels() {
   versionLabel.textContent = `${VERSION} | ${PHASE}`;
   buildLabel.textContent = `Build ${BUILD_TIME}`;
-  missionText.textContent = 'Interceptar o comboio e sobreviver ao contra-ataque.';
 }
 
 export function addLog(message, tone = 'good') {
   logEntries.unshift({ message, tone });
   logEntries = logEntries.slice(0, MAX_LOG_ENTRIES);
-  logBox.innerHTML = logEntries
-    .map((entry) => `<div class="log-entry ${entry.tone}">${entry.message}</div>`)
-    .join('');
+  logBox.innerHTML = logEntries.map((entry) => `<div class="log-entry ${entry.tone}">${entry.message}</div>`).join('');
 }
 
-export function renderHud(player, contacts, enemies) {
+export function renderHud(player, contacts, enemies, mission, career) {
   speedValue.textContent = `${player.speed.toFixed(0)} kn`;
   depthValue.textContent = `${player.depth.toFixed(0)} m`;
   batteryValue.textContent = `${player.battery.toFixed(0)}%`;
@@ -57,5 +61,13 @@ export function renderHud(player, contacts, enemies) {
   )).join('') || '<div class="status-item"><strong class="warn">No reliable contacts</strong></div>';
 
   const destroyed = enemies.filter((enemy) => enemy.hp <= 0).length;
-  missionProgress.textContent = `Targets destroyed: ${destroyed}/${enemies.length} | Hull integrity: ${player.hullIntegrity}%`;
+  missionTitle.textContent = getLocalizedMissionTitle(mission);
+  missionText.textContent = getLocalizedMissionBriefing(mission);
+  missionProgress.textContent = `Targets destroyed: ${destroyed}/${enemies.length} | Hull integrity: ${Math.max(0, player.hullIntegrity)}%`;
+  missionStatus.textContent = `Status: ${mission.status.toUpperCase()}`;
+
+  commanderName.textContent = career.commander;
+  commanderRank.textContent = career.rank;
+  commanderXp.textContent = `${career.xp}`;
+  commanderCredits.textContent = `${career.credits}`;
 }

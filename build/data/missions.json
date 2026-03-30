@@ -1,8 +1,55 @@
 [
   {
-    "id": "mission-001",
-    "name": "North Atlantic Intercept",
-    "objective": "Attack the convoy and return with the submarine operational.",
-    "difficulty": "Normal"
+    "id": 1,
+    "code": "TRAINING_PATROL",
+    "title": {"pt": "Patrulha de Treinamento", "en": "Training Patrol", "es": "Patrulla de Entrenamiento"},
+    "briefing": {
+      "pt": "Patrulhe a área, identifique contatos e retorne com o submarino acima de 60% de integridade.",
+      "en": "Patrol the area, identify contacts and return with submarine integrity above 60%.",
+      "es": "Patrulla el área, identifica contactos y regresa con la integridad del submarino por encima del 60%."
+    },
+    "goal": {"type": "destroy", "count": 1},
+    "reward": {"xp": 100, "credits": 120},
+    "player": {"torpedoes": 6, "battery": 100, "diesel": 100},
+    "enemies": [
+      { "id": 1, "x": 690, "y": 210, "hp": 2, "type": "Cargo Ship", "speed": 0.6, "heading": 3.14, "noise": 28 },
+      { "id": 2, "x": 800, "y": 330, "hp": 2, "type": "Escort", "speed": 0.8, "heading": 3.14, "noise": 36 }
+    ]
+  },
+  {
+    "id": 2,
+    "code": "LONE_FREIGHTER",
+    "title": {"pt": "Interdição de Cargueiro", "en": "Freighter Interdiction", "es": "Interdicción de Carguero"},
+    "briefing": {
+      "pt": "Afunde dois alvos no comboio leve e sobreviva ao contra-ataque das escoltas.",
+      "en": "Sink two targets in the light convoy and survive the escorts' counterattack.",
+      "es": "Hunde dos objetivos en el convoy ligero y sobrevive al contraataque de las escoltas."
+    },
+    "goal": {"type": "destroy", "count": 2},
+    "reward": {"xp": 180, "credits": 240},
+    "player": {"torpedoes": 7, "battery": 95, "diesel": 100},
+    "enemies": [
+      { "id": 1, "x": 680, "y": 190, "hp": 3, "type": "Destroyer", "speed": 1.0, "heading": 3.14, "noise": 45 },
+      { "id": 2, "x": 770, "y": 270, "hp": 2, "type": "Cargo Ship", "speed": 0.7, "heading": 3.14, "noise": 30 },
+      { "id": 3, "x": 850, "y": 360, "hp": 2, "type": "Cargo Ship", "speed": 0.7, "heading": 3.14, "noise": 30 }
+    ]
+  },
+  {
+    "id": 3,
+    "code": "ESCORT_HUNTER",
+    "title": {"pt": "Caçada de Escoltas", "en": "Escort Hunt", "es": "Caza de Escoltas"},
+    "briefing": {
+      "pt": "Elimine os navios de escolta inimigos. O mar está hostil e o risco de dano é alto.",
+      "en": "Eliminate the enemy escort ships. The sea is hostile and the risk of damage is high.",
+      "es": "Elimina los barcos de escolta enemigos. El mar es hostil y el riesgo de daños es alto."
+    },
+    "goal": {"type": "destroyType", "enemyType": "Escort", "count": 2},
+    "reward": {"xp": 240, "credits": 300},
+    "player": {"torpedoes": 8, "battery": 90, "diesel": 92},
+    "enemies": [
+      { "id": 1, "x": 650, "y": 160, "hp": 2, "type": "Escort", "speed": 1.0, "heading": 3.14, "noise": 38 },
+      { "id": 2, "x": 770, "y": 290, "hp": 2, "type": "Escort", "speed": 1.0, "heading": 3.14, "noise": 38 },
+      { "id": 3, "x": 850, "y": 380, "hp": 3, "type": "Destroyer", "speed": 1.1, "heading": 3.14, "noise": 45 }
+    ]
   }
 ]
