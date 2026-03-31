@@ -11,13 +11,27 @@
     <header class="topbar">
       <div>
         <h1>Submarine Commander</h1>
-        <div class="meta">Version v1.2.0 | Build 2026-03-30 22:18:01 | Premium Visual Integration Fix</div>
+        <div class="meta">Version v1.3.0 | Build 2026-03-30 22:53:07 | Lobby and Navigation Restore</div>
       </div>
-      <div class="status-chip" id="loadStatus">Loading assets...</div>
+      <div class="top-actions">
+        <div class="status-chip" id="loadStatus">Loading assets...</div>
+      </div>
     </header>
 
     <main class="layout">
       <aside class="sidebar">
+        <section class="panel nav-panel">
+          <h2>Navigation</h2>
+          <div class="nav-grid">
+            <button class="nav-btn active" data-screen="lobby">Lobby</button>
+            <button class="nav-btn" data-screen="missions">Missões</button>
+            <button class="nav-btn" data-screen="career">Carreira</button>
+            <button class="nav-btn" data-screen="avatars">Avatares</button>
+            <button class="nav-btn" data-screen="battle">Batalha</button>
+            <button class="nav-btn" data-screen="intel">Intel</button>
+          </div>
+        </section>
+
         <section class="panel">
           <h2>Captain Avatar</h2>
           <div class="avatar-grid">
@@ -33,50 +47,140 @@
         </section>
 
         <section class="panel">
-          <h2>Combat Panel</h2>
-          <div class="stats" id="statsPanel"></div>
-          <div class="button-row">
-            <button id="fireBtn" class="primary">Fire Torpedo</button>
-            <button id="sonarBtn" class="secondary">Pulse Sonar</button>
-          </div>
-          <div class="button-row">
-            <button id="surfaceBtn" class="secondary">Toggle Dive</button>
-            <button id="resetBtn" class="danger">Reset Mission</button>
-          </div>
-        </section>
-
-        <section class="panel">
-          <h2>Integrated Assets</h2>
-          <ul class="asset-list">
-            <li>Captain avatar</li>
-            <li>Navigator avatar</li>
-            <li>Player submarine</li>
-            <li>Escort destroyer</li>
-            <li>Cargo ship</li>
-            <li>Enemy submarine</li>
-            <li>Torpedo effect</li>
-            <li>Explosion effect</li>
-            <li>Sonar effect</li>
-            <li>UI icons sheet</li>
-          </ul>
+          <h2>Quick Status</h2>
+          <div class="stats" id="quickStats"></div>
         </section>
       </aside>
 
       <section class="main-panel">
-        <div class="hero panel">
-          <div class="hero-left">
-            <h2>Premium visual build fix</h2>
-            <p>Esta versão corrige o erro de drawImage, integra as imagens já criadas e usa fallback seguro caso algum asset falhe.</p>
+        <section class="screen active" id="screen-lobby">
+          <div class="hero panel">
+            <div class="hero-left">
+              <h2>Lobby restaurado</h2>
+              <p>Agora o jogo voltou a ter tela de lobby, navegação lateral, tela de missões, carreira, avatares, batalha e inteligência, mantendo os visuais premium já integrados.</p>
+              <div class="button-row">
+                <button class="primary" id="startMissionFromLobby">Iniciar Missão</button>
+                <button class="secondary" id="goCareerFromLobby">Ver Carreira</button>
+              </div>
+            </div>
+            <div class="hero-right">
+              <img src="./assets/images/ui/icons.png" alt="UI Icons" />
+            </div>
           </div>
-          <div class="hero-right">
-            <img src="./assets/images/ui/icons.png" alt="UI Icons" />
+          <div class="grid-two">
+            <div class="panel">
+              <h2>Submarino ativo</h2>
+              <div class="ship-card">
+                <img src="./assets/images/vessels/player_sub.png" alt="Player Sub" />
+                <div>
+                  <div class="ship-title">Player Sub</div>
+                  <div class="ship-meta">Velocidade alta | ataque premium | pronto para GitHub Pages</div>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <h2>Resumo operacional</h2>
+              <div class="list-lines" id="summaryBox"></div>
+            </div>
           </div>
-        </div>
+        </section>
 
-        <div class="panel canvas-panel">
-          <canvas id="gameCanvas" width="1200" height="680"></canvas>
-          <div class="hint">Controls: Arrow keys move | Space fires torpedo | S sonar pulse | D dive/surface</div>
-        </div>
+        <section class="screen" id="screen-missions">
+          <div class="grid-two">
+            <div class="panel">
+              <h2>Missões</h2>
+              <div class="mission-list" id="missionList"></div>
+            </div>
+            <div class="panel">
+              <h2>Briefing</h2>
+              <div class="briefing-box" id="briefingBox"></div>
+              <div class="button-row">
+                <button class="primary" id="launchMissionBtn">Iniciar Missão</button>
+                <button class="secondary" id="goBattleBtn">Abrir Batalha</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="screen-career">
+          <div class="grid-two">
+            <div class="panel">
+              <h2>Carreira</h2>
+              <div class="stats big-stats" id="careerStats"></div>
+            </div>
+            <div class="panel">
+              <h2>Frota visual integrada</h2>
+              <div class="fleet-grid">
+                <div class="fleet-item"><img src="./assets/images/vessels/player_sub.png"><span>Player Sub</span></div>
+                <div class="fleet-item"><img src="./assets/images/vessels/escort.png"><span>Escort</span></div>
+                <div class="fleet-item"><img src="./assets/images/vessels/cargo.png"><span>Cargo</span></div>
+                <div class="fleet-item"><img src="./assets/images/vessels/enemy_sub.png"><span>Enemy Sub</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="screen-avatars">
+          <div class="panel">
+            <h2>Seleção de avatar</h2>
+            <div class="grid-two avatars-screen">
+              <div class="avatar-preview">
+                <img id="avatarPreview" src="./assets/images/avatars/captain.png" alt="Avatar Preview">
+              </div>
+              <div>
+                <div class="button-row">
+                  <button class="secondary avatar-select-btn" data-avatar="captain">Usar Captain</button>
+                  <button class="secondary avatar-select-btn" data-avatar="navigator">Usar Navigator</button>
+                </div>
+                <div class="briefing-box" id="avatarDescription">Capitão principal selecionado.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="screen-battle">
+          <div class="panel battle-controls-panel">
+            <div class="button-row">
+              <button id="fireBtn" class="primary">Fire Torpedo</button>
+              <button id="sonarBtn" class="secondary">Pulse Sonar</button>
+              <button id="surfaceBtn" class="secondary">Submergir / Emergir</button>
+              <button id="resetBtn" class="danger">Reset Mission</button>
+            </div>
+          </div>
+          <div class="panel canvas-panel">
+            <canvas id="gameCanvas" width="1200" height="680"></canvas>
+            <div class="hint">Controls: Arrow keys move | Space fires torpedo | S sonar pulse | D dive/surface</div>
+          </div>
+        </section>
+
+        <section class="screen" id="screen-intel">
+          <div class="grid-two">
+            <div class="panel">
+              <h2>Intel</h2>
+              <div class="briefing-box">
+                Escoltas respondem rápido a aproximações.<br><br>
+                Cargueiros são alvos mais fáceis.<br><br>
+                Submarinos inimigos precisam de atenção extra.<br><br>
+                O sonar visual já está integrado nesta build.
+              </div>
+            </div>
+            <div class="panel">
+              <h2>Assets integrados</h2>
+              <ul class="asset-list">
+                <li>Captain avatar</li>
+                <li>Navigator avatar</li>
+                <li>Player submarine</li>
+                <li>Escort destroyer</li>
+                <li>Cargo ship</li>
+                <li>Enemy submarine</li>
+                <li>Torpedo effect</li>
+                <li>Explosion effect</li>
+                <li>Sonar effect</li>
+                <li>UI icon sheet</li>
+              </ul>
+            </div>
+          </div>
+        </section>
       </section>
     </main>
   </div>

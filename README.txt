@@ -1,21 +1,17 @@
 Submarine Commander
-Version: v1.2.0
-Build: 2026-03-30 22:18:01
-Phase: Premium Visual Integration Fix
+Version: v1.3.0
+Build: 2026-03-30 22:53:07
+Phase: Lobby and Navigation Restore
 
-This package fixes the broken image loading issue and integrates the generated assets already available.
-
-Integrated assets:
-- captain avatar
-- navigator avatar
-- player submarine
-- escort destroyer
-- cargo ship
-- enemy submarine
-- torpedo effect
-- explosion effect
-- sonar effect
-- UI icon sheet
+What is restored in this build:
+- lobby
+- navigation buttons
+- mission screen
+- career screen
+- avatar screen
+- battle screen
+- intel screen
+- premium integrated visuals maintained
 
 Controls:
 - Arrow keys: move
