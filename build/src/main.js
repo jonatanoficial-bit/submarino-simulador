@@ -821,19 +821,27 @@ const LAND_POLYS = [
       };
       qs("#officerFeed").textContent = map[t];
       if (t === "mechanic") {
+        state.battle.hull = Math.min(100, state.battle.hull + 12);
+        state.battle.engine = Math.min(100, state.battle.engine + 8);
         state.battle.hull = Math.min(100, state.battle.hull + 8);
         state.battle.engine = Math.min(100, state.battle.engine + 5);
       }
-      if (t === "sonar") state.battle.pulse = 100;
-      if (t === "weapons") updateFireSolution();
+      if (t === "sonar") {
+        state.battle.pulse = 140;
+        state.battle.sonarSys = Math.min(100, state.battle.sonarSys + 5);
+      }
+      if (t === "weapons") {
+        updateFireSolution();
+        state.battle.targetSpeed = Math.max(0, state.battle.targetSpeed - 1);
+      }
     });
 
     qsa("[data-dir]").forEach(btn => btn.onclick = () => {
       const d = btn.dataset.dir;
-      if (d === "left") state.battle.targetHeading -= 12;
-      if (d === "right") state.battle.targetHeading += 12;
-      if (d === "up") state.battle.targetSpeed = Math.min(10, state.battle.targetSpeed + 2);
-      if (d === "down") state.battle.targetSpeed = Math.max(0, state.battle.targetSpeed - 2);
+      if (d === "left") state.battle.targetHeading -= 6;
+      if (d === "right") state.battle.targetHeading += 6;
+      if (d === "up") state.battle.targetSpeed = Math.min(10, state.battle.targetSpeed + 1);
+      if (d === "down") state.battle.targetSpeed = Math.max(0, state.battle.targetSpeed - 1);
       if (d === "stop") state.battle.targetSpeed = 0;
     });
 
@@ -847,8 +855,8 @@ const LAND_POLYS = [
       if (qs("#screen-battle").classList.contains("active")) {
         if (e.key === "ArrowLeft") state.battle.targetHeading -= 10;
         if (e.key === "ArrowRight") state.battle.targetHeading += 10;
-        if (e.key === "ArrowUp") state.battle.targetSpeed = Math.min(10, state.battle.targetSpeed + 2);
-        if (e.key === "ArrowDown") state.battle.targetSpeed = Math.max(0, state.battle.targetSpeed - 2);
+        if (e.key === "ArrowUp") state.battle.targetSpeed = Math.min(10, state.battle.targetSpeed + 1);
+        if (e.key === "ArrowDown") state.battle.targetSpeed = Math.max(0, state.battle.targetSpeed - 1);
         if (e.key === " ") {
           e.preventDefault();
           qs("#torpedoBtn").click();
