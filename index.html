@@ -11,16 +11,16 @@
     <header class="topbar">
       <div>
         <h1>Submarine Commander</h1>
-        <div class="meta">Version v2.0.0 | Build 2026-03-31 12:54:20 | Restructured Simulator Foundation</div>
+        <div class="meta">Version v2.1.0 | Build 2026-03-31 13:31:15 | World Map Navigation and Tactical AI</div>
       </div>
-      <div id="statusChip" class="chip">Carregando...</div>
+      <div id="statusChip" class="chip">Carregando assets...</div>
     </header>
 
     <section id="screen-start" class="screen active">
       <div class="panel hero">
         <div>
           <h2>Menu inicial</h2>
-          <p>Agora o jogo começa como você pediu: Nova partida, Continuar, seleção de avatar, lobby com loja, missões históricas, mundo aberto e batalha com instrumentos e oficiais.</p>
+          <p>Nova fase com mapa mundi navegável, zoom, restrição por terra/água, encontros aleatórios e IA tática mais coerente em combate.</p>
           <div class="row">
             <button id="newGameBtn" class="primary">Nova partida</button>
             <button id="continueBtn" class="secondary">Continuar</button>
@@ -33,7 +33,7 @@
     <section id="screen-avatar" class="screen">
       <div class="panel">
         <h2>Escolha seu avatar</h2>
-        <p class="muted">Dois avatares reais e três espaços provisórios para futuras artes.</p>
+        <p class="muted">2 avatares reais e 3 espaços provisórios para futuras imagens.</p>
         <div id="avatarGrid" class="avatar-grid"></div>
         <div class="row">
           <button id="avatarBackBtn" class="secondary">Voltar</button>
@@ -104,11 +104,64 @@
 
           <div id="tab-openworld" class="panel lobby-tab">
             <h2>Mundo aberto</h2>
-            <p class="muted">Escolha um mapa para patrulhar. Em qualquer momento pode encontrar inimigos.</p>
+            <p class="muted">Escolha um teatro e patrulhe. Contatos podem surgir aleatoriamente ao navegar no mapa.</p>
             <div id="worldList" class="grid-two"></div>
             <div class="row"><button id="launchWorldBtn" class="primary">Iniciar patrulha</button></div>
           </div>
         </main>
+      </div>
+    </section>
+
+    <section id="screen-navmap" class="screen">
+      <div class="battle-layout">
+        <div class="stack">
+          <div class="panel battle-head">
+            <div>
+              <h2 id="navTitle">Mapa naval</h2>
+              <div id="navSub" class="muted"></div>
+            </div>
+            <button id="backLobbyFromMapBtn" class="secondary">Voltar ao lobby</button>
+          </div>
+          <div class="panel">
+            <canvas id="worldCanvas" width="1280" height="760"></canvas>
+            <div class="mobile-ui">
+              <div class="dir-pad">
+                <button data-mapdir="up">▲</button>
+                <div class="row tight">
+                  <button data-mapdir="left">◀</button>
+                  <button data-mapdir="stop">■</button>
+                  <button data-mapdir="right">▶</button>
+                </div>
+                <button data-mapdir="down">▼</button>
+              </div>
+              <div class="action-pad">
+                <button id="zoomInBtn" class="secondary">Zoom +</button>
+                <button id="zoomOutBtn" class="secondary">Zoom -</button>
+                <button id="mapSonarBtn" class="secondary">Pulso sonar</button>
+                <button id="forceEncounterBtn" class="primary">Procurar contato</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <aside class="stack">
+          <div class="panel">
+            <h2>Navegação</h2>
+            <div class="stats-grid">
+              <div class="stat"><div class="label">Mapa</div><div id="mapNameValue" class="value">Atlântico</div></div>
+              <div class="stat"><div class="label">Zoom</div><div id="zoomValue" class="value">1.0x</div></div>
+              <div class="stat"><div class="label">Curso</div><div id="courseValue" class="value">000°</div></div>
+              <div class="stat"><div class="label">Velocidade</div><div id="mapSpeedValue" class="value">0 nós</div></div>
+            </div>
+          </div>
+          <div class="panel">
+            <h2>Contato operacional</h2>
+            <div id="mapFeed" class="muted panel-mini"></div>
+          </div>
+          <div class="panel">
+            <h2>Regras do mapa</h2>
+            <div class="muted panel-mini">O submarino só navega em água. Terra bloqueia movimento. Zoom e encontros aleatórios já estão ativos nesta fase.</div>
+          </div>
+        </aside>
       </div>
     </section>
 
@@ -120,7 +173,7 @@
               <h2 id="battleTitle">Batalha</h2>
               <div id="battleSub" class="muted"></div>
             </div>
-            <button id="backLobbyBtn" class="secondary">Voltar ao lobby</button>
+            <button id="backMapBtn" class="secondary">Voltar ao mapa</button>
           </div>
           <div class="panel">
             <canvas id="battleCanvas" width="1280" height="760"></canvas>
