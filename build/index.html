@@ -7,222 +7,192 @@
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
+<div class="app">
+  <header class="topbar">
+    <div>
+      <h1>Submarine Commander</h1>
+      <div class="meta">Version v2.7.0 | Build 2026-03-31 20:54:56 | Advanced Tactical AI + Crew Impact</div>
+    </div>
+    <div id="statusChip" class="chip">Carregando assets...</div>
+  </header>
+
+  <section id="screen-start" class="screen active">
+    <div class="panel hero">
       <div>
-        <h1>Submarine Commander</h1>
-        <div class="meta">Version v2.1.0 | Build 2026-03-31 13:31:15 | World Map Navigation and Tactical AI</div>
-      </div>
-      <div id="statusChip" class="chip">Carregando assets...</div>
-    </header>
-
-    <section id="screen-start" class="screen active">
-      <div class="panel hero">
-        <div>
-          <h2>Menu inicial</h2>
-          <p>Nova fase com mapa mundi navegável, zoom, restrição por terra/água, encontros aleatórios e IA tática mais coerente em combate.</p>
-          <div class="row">
-            <button id="newGameBtn" class="primary">Nova partida</button>
-            <button id="continueBtn" class="secondary">Continuar</button>
-          </div>
-        </div>
-        <img src="./assets/images/vessels/player_sub.png" alt="Submarino" class="hero-img" />
-      </div>
-    </section>
-
-    <section id="screen-avatar" class="screen">
-      <div class="panel">
-        <h2>Escolha seu avatar</h2>
-        <p class="muted">2 avatares reais e 3 espaços provisórios para futuras imagens.</p>
-        <div id="avatarGrid" class="avatar-grid"></div>
+        <h2>Menu inicial</h2>
+        <p>Nova fase focada em fluidez de combate e toque para celular: botões melhores, solução de tiro mais clara, encontro controlado e combate com HUD mais legível.</p>
         <div class="row">
-          <button id="avatarBackBtn" class="secondary">Voltar</button>
-          <button id="avatarNextBtn" class="primary">Ir para o lobby</button>
+          <button id="newGameBtn" class="primary">Nova partida</button>
+          <button id="continueBtn" class="secondary">Continuar</button>
         </div>
       </div>
-    </section>
+      <img src="./assets/images/vessels/player_sub.png" class="hero-img" alt="Submarino" />
+    </div>
+  </section>
 
-    <section id="screen-lobby" class="screen">
-      <div class="lobby-layout">
-        <aside class="stack">
-          <div class="panel">
-            <h2>Comandante</h2>
-            <div class="profile">
-              <img id="profileAvatar" class="profile-avatar" alt="Avatar" />
-              <div>
-                <div id="profileRank" class="big"></div>
-                <div id="profileStats" class="muted"></div>
-              </div>
-            </div>
-          </div>
-          <div class="panel">
-            <h2>Submarino</h2>
-            <div id="subInfo" class="stats-grid"></div>
-          </div>
-          <div class="panel">
-            <h2>Lobby</h2>
-            <div class="nav-grid">
-              <button class="tab-btn active" data-tab="overview">Visão geral</button>
-              <button class="tab-btn" data-tab="store">Loja</button>
-              <button class="tab-btn" data-tab="missions">Missões</button>
-              <button class="tab-btn" data-tab="openworld">Mundo aberto</button>
-            </div>
-          </div>
-        </aside>
-
-        <main class="stack">
-          <div id="tab-overview" class="panel lobby-tab active">
-            <h2>Centro de operações</h2>
-            <div class="grid-two">
-              <div class="cardBox">
-                <h3>Resumo</h3>
-                <div id="careerSummary" class="muted"></div>
-              </div>
-              <div class="cardBox">
-                <h3>Último relatório</h3>
-                <div id="lastReport" class="muted"></div>
-              </div>
-            </div>
-          </div>
-
-          <div id="tab-store" class="panel lobby-tab">
-            <h2>Loja</h2>
-            <div id="storeList" class="grid-two"></div>
-          </div>
-
-          <div id="tab-missions" class="panel lobby-tab">
-            <h2>Missões históricas</h2>
-            <div class="grid-two">
-              <div id="missionList" class="stack"></div>
-              <div class="cardBox">
-                <h3>Briefing</h3>
-                <div id="missionBrief" class="muted"></div>
-                <div class="row"><button id="launchMissionBtn" class="primary">Iniciar missão</button></div>
-              </div>
-            </div>
-          </div>
-
-          <div id="tab-openworld" class="panel lobby-tab">
-            <h2>Mundo aberto</h2>
-            <p class="muted">Escolha um teatro e patrulhe. Contatos podem surgir aleatoriamente ao navegar no mapa.</p>
-            <div id="worldList" class="grid-two"></div>
-            <div class="row"><button id="launchWorldBtn" class="primary">Iniciar patrulha</button></div>
-          </div>
-        </main>
+  <section id="screen-avatar" class="screen">
+    <div class="panel">
+      <h2>Escolha seu avatar</h2>
+      <div id="avatarGrid" class="avatar-grid"></div>
+      <div class="row">
+        <button id="avatarBackBtn" class="secondary">Voltar</button>
+        <button id="avatarNextBtn" class="primary">Ir para o lobby</button>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section id="screen-navmap" class="screen">
-      <div class="battle-layout">
-        <div class="stack">
-          <div class="panel battle-head">
+  <section id="screen-lobby" class="screen">
+    <div class="lobby-layout">
+      <aside class="stack">
+        <div class="panel">
+          <h2>Comandante</h2>
+          <div class="profile">
+            <img id="profileAvatar" class="profile-avatar" alt="Avatar" />
             <div>
-              <h2 id="navTitle">Mapa naval</h2>
-              <div id="navSub" class="muted"></div>
+              <div id="profileRank" class="big"></div>
+              <div id="profileStats" class="muted"></div>
             </div>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Submarino</h2>
+          <div id="subInfo" class="stats-grid"></div>
+        </div>
+        <div class="panel">
+          <h2>Lobby</h2>
+          <div class="nav-grid">
+            <button class="tab-btn active" data-tab="overview">Visão geral</button>
+            <button class="tab-btn" data-tab="store">Loja</button>
+            <button class="tab-btn" data-tab="missions">Missões</button>
+            <button class="tab-btn" data-tab="openworld">Mundo aberto</button>
+          </div>
+        </div>
+      </aside>
+      <main class="stack">
+        <div id="tab-overview" class="panel lobby-tab active">
+          <h2>Centro de operações</h2>
+          <div class="grid-two">
+            <div class="cardBox"><h3>Resumo</h3><div id="careerSummary" class="muted"></div></div>
+            <div class="cardBox"><h3>Último relatório</h3><div id="lastReport" class="muted"></div></div>
+          </div>
+        </div>
+        <div id="tab-store" class="panel lobby-tab">
+          <h2>Loja</h2>
+          <div id="storeList" class="grid-two"></div>
+        </div>
+        <div id="tab-missions" class="panel lobby-tab">
+          <h2>Missões históricas</h2>
+          <div class="grid-two">
+            <div id="missionList" class="stack"></div>
+            <div class="cardBox">
+              <h3>Briefing</h3>
+              <div id="missionBrief" class="muted"></div>
+              <div class="row"><button id="launchMissionBtn" class="primary">Entrar no mapa</button></div>
+            </div>
+          </div>
+        </div>
+        <div id="tab-openworld" class="panel lobby-tab">
+          <h2>Mundo aberto</h2>
+          <div id="worldList" class="grid-two"></div>
+          <div class="row"><button id="launchWorldBtn" class="primary">Entrar no mapa</button></div>
+        </div>
+      </main>
+    </div>
+  </section>
+
+  <section id="screen-navmap" class="screen">
+    <div class="battle-layout">
+      <div class="stack">
+        <div class="panel battle-head">
+          <div><h2 id="navTitle">Mapa naval</h2><div id="navSub" class="muted"></div></div>
+          <div class="row">
+            <button id="encounterBtn" class="primary" disabled>Entrar em combate</button>
             <button id="backLobbyFromMapBtn" class="secondary">Voltar ao lobby</button>
           </div>
-          <div class="panel">
-            <canvas id="worldCanvas" width="1280" height="760"></canvas>
-            <div class="mobile-ui">
-              <div class="dir-pad">
-                <button data-mapdir="up">▲</button>
-                <div class="row tight">
-                  <button data-mapdir="left">◀</button>
-                  <button data-mapdir="stop">■</button>
-                  <button data-mapdir="right">▶</button>
-                </div>
-                <button data-mapdir="down">▼</button>
-              </div>
-              <div class="action-pad">
-                <button id="zoomInBtn" class="secondary">Zoom +</button>
-                <button id="zoomOutBtn" class="secondary">Zoom -</button>
-                <button id="mapSonarBtn" class="secondary">Pulso sonar</button>
-                <button id="forceEncounterBtn" class="primary">Procurar contato</button>
-              </div>
-            </div>
+        </div>
+        <div class="panel">
+          <canvas id="worldCanvas" width="1280" height="760"></canvas>
+          <div class="touch-bar">
+            <button class="touch-btn" data-mapdir="left">◀ Rumo</button>
+            <button class="touch-btn" data-mapdir="up">▲ Acelerar</button>
+            <button class="touch-btn" data-mapdir="stop">■ Parar</button>
+            <button class="touch-btn" data-mapdir="down">▼ Frear</button>
+            <button class="touch-btn" data-mapdir="right">▶ Rumo</button>
+            <button id="zoomInBtn" class="touch-btn secondary">Zoom +</button>
+            <button id="zoomOutBtn" class="touch-btn secondary">Zoom -</button>
+            <button id="mapSonarBtn" class="touch-btn secondary">Sonar</button>
+            <button id="forceEncounterBtn" class="touch-btn primary">Patrulhar setor</button>
           </div>
         </div>
-        <aside class="stack">
-          <div class="panel">
-            <h2>Navegação</h2>
-            <div class="stats-grid">
-              <div class="stat"><div class="label">Mapa</div><div id="mapNameValue" class="value">Atlântico</div></div>
-              <div class="stat"><div class="label">Zoom</div><div id="zoomValue" class="value">1.0x</div></div>
-              <div class="stat"><div class="label">Curso</div><div id="courseValue" class="value">000°</div></div>
-              <div class="stat"><div class="label">Velocidade</div><div id="mapSpeedValue" class="value">0 nós</div></div>
-            </div>
-          </div>
-          <div class="panel">
-            <h2>Contato operacional</h2>
-            <div id="mapFeed" class="muted panel-mini"></div>
-          </div>
-          <div class="panel">
-            <h2>Regras do mapa</h2>
-            <div class="muted panel-mini">O submarino só navega em água. Terra bloqueia movimento. Zoom e encontros aleatórios já estão ativos nesta fase.</div>
-          </div>
-        </aside>
       </div>
-    </section>
+      <aside class="stack">
+        <div class="panel">
+          <h2>Navegação</h2>
+          <div class="stats-grid">
+            <div class="stat"><div class="label">Mapa</div><div id="mapNameValue" class="value">Atlântico</div></div>
+            <div class="stat"><div class="label">Zoom</div><div id="zoomValue" class="value">1.0x</div></div>
+            <div class="stat"><div class="label">Curso</div><div id="courseValue" class="value">000°</div></div>
+            <div class="stat"><div class="label">Velocidade</div><div id="mapSpeedValue" class="value">0 nós</div></div>
+          </div>
+        </div>
+        <div class="panel"><h2>Feed de mapa</h2><div id="mapFeed" class="muted panel-mini"></div></div>
+        <div class="panel"><h2>Contato atual</h2><div id="encounterInfo" class="muted panel-mini">Nenhum encontro ativo.</div></div>
+      </aside>
+    </div>
+  </section>
 
-    <section id="screen-battle" class="screen">
-      <div class="battle-layout">
-        <div class="stack">
-          <div class="panel battle-head">
-            <div>
-              <h2 id="battleTitle">Batalha</h2>
-              <div id="battleSub" class="muted"></div>
-            </div>
-            <button id="backMapBtn" class="secondary">Voltar ao mapa</button>
-          </div>
-          <div class="panel">
-            <canvas id="battleCanvas" width="1280" height="760"></canvas>
-            <div class="mobile-ui">
-              <div class="dir-pad">
-                <button data-dir="up">▲</button>
-                <div class="row tight">
-                  <button data-dir="left">◀</button>
-                  <button data-dir="stop">■</button>
-                  <button data-dir="right">▶</button>
-                </div>
-                <button data-dir="down">▼</button>
-              </div>
-              <div class="action-pad">
-                <button id="sonarBtn" class="secondary">Sonar</button>
-                <button id="diveBtn" class="secondary">Submergir</button>
-                <button id="torpedoBtn" class="primary">Torpedo</button>
-                <button id="repairBtn" class="danger">Reparos</button>
-              </div>
-            </div>
+  <section id="screen-battle" class="screen">
+    <div class="battle-layout">
+      <div class="stack">
+        <div class="panel battle-head">
+          <div><h2 id="battleTitle">Batalha</h2><div id="battleSub" class="muted"></div></div>
+          <button id="backMapBtn" class="secondary">Voltar ao mapa</button>
+        </div>
+        <div class="panel">
+          <canvas id="battleCanvas" width="1280" height="760"></canvas>
+          <div class="touch-bar">
+            <button class="touch-btn" data-dir="left">◀ Bombordo</button>
+            <button class="touch-btn" data-dir="up">▲ Avançar</button>
+            <button class="touch-btn" data-dir="stop">■ Parar</button>
+            <button class="touch-btn" data-dir="down">▼ Reduzir</button>
+            <button class="touch-btn" data-dir="right">▶ Boreste</button>
+            <button id="sonarBtn" class="touch-btn secondary">Sonar</button>
+            <button id="diveBtn" class="touch-btn secondary">Profundidade</button>
+            <button id="torpedoBtn" class="touch-btn primary">Torpedo</button>
+            <button id="repairBtn" class="touch-btn danger">Reparos</button>
           </div>
         </div>
-        <aside class="stack">
-          <div class="panel">
-            <h2>Instrumentos</h2>
-            <div class="stats-grid">
-              <div class="stat"><div class="label">Profundidade</div><div id="depthValue" class="value">0 m</div><div class="meter"><div id="depthFill" class="fill"></div></div></div>
-              <div class="stat"><div class="label">Bússola</div><div id="headingValue" class="value">000°</div><div class="meter"><div id="headingFill" class="fill"></div></div></div>
-              <div class="stat"><div class="label">Velocidade</div><div id="speedValue" class="value">0 nós</div><div class="meter"><div id="speedFill" class="fill"></div></div></div>
-              <div class="stat"><div class="label">Casco</div><div id="hullValue" class="value">100%</div><div class="meter"><div id="hullFill" class="fill safe"></div></div></div>
-            </div>
-          </div>
-          <div class="panel">
-            <h2>Oficiais</h2>
-            <div class="stack tight">
-              <button class="officerBtn secondary" data-officer="mechanic">Mecânico</button>
-              <button class="officerBtn secondary" data-officer="sonar">Sonarista</button>
-              <button class="officerBtn secondary" data-officer="weapons">Oficial de armas</button>
-            </div>
-            <div id="officerFeed" class="muted panel-mini"></div>
-          </div>
-          <div class="panel">
-            <h2>Feed tático</h2>
-            <div id="tacticalFeed" class="muted panel-mini"></div>
-          </div>
-        </aside>
       </div>
-    </section>
-  </div>
-  <script src="./src/main.js"></script>
+      <aside class="stack">
+        <div class="panel">
+          <h2>Instrumentos</h2>
+          <div class="stats-grid">
+            <div class="stat"><div class="label">Profundidade</div><div id="depthValue" class="value">0 m</div><div class="meter"><div id="depthFill" class="fill"></div></div></div>
+            <div class="stat"><div class="label">Bússola</div><div id="headingValue" class="value">000°</div><div class="meter"><div id="headingFill" class="fill"></div></div></div>
+            <div class="stat"><div class="label">Velocidade</div><div id="speedValue" class="value">0 nós</div><div class="meter"><div id="speedFill" class="fill"></div></div></div>
+            <div class="stat"><div class="label">Casco</div><div id="hullValue" class="value">100%</div><div class="meter"><div id="hullFill" class="fill safe"></div></div></div>
+            <div class="stat"><div class="label">Motor</div><div id="engineValue" class="value">100%</div><div class="meter"><div id="engineFill" class="fill safe"></div></div></div>
+            <div class="stat"><div class="label">Sonar</div><div id="sonarValue" class="value">100%</div><div class="meter"><div id="sonarSysFill" class="fill safe"></div></div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Solução de tiro</h2>
+          <div id="fireSolution" class="panel-mini muted">Aguardando alvo.</div>
+        </div>
+        <div class="panel">
+          <h2>Oficiais</h2>
+          <div class="stack tight">
+            <button class="officerBtn secondary" data-officer="mechanic">Mecânico</button>
+            <button class="officerBtn secondary" data-officer="sonar">Sonarista</button>
+            <button class="officerBtn secondary" data-officer="weapons">Oficial de armas</button>
+          </div>
+          <div id="officerFeed" class="muted panel-mini"></div>
+        </div>
+        <div class="panel"><h2>Feed tático</h2><div id="tacticalFeed" class="muted panel-mini"></div></div>
+      </aside>
+    </div>
+  </section>
+</div>
+<script src="./src/main.js"></script>
 </body>
 </html>
