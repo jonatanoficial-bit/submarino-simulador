@@ -1,19 +1,17 @@
 Submarine Commander
-Version: v2.0.0
-Build: 2026-03-31 12:54:20
-Phase: Restructured Simulator Foundation
+Version: v2.1.0
+Build: 2026-03-31 13:31:15
+Phase: World Map Navigation and Tactical AI
 
-What changed:
-- start menu with new game / continue
-- avatar selection before lobby
-- lobby with overview, store, missions, open world
-- historical mission briefings
-- open world patrol start
-- mobile-first battle controls
-- depth, compass, speed and hull instruments
-- sector officers with responses
-- premium visuals kept integrated
+This build adds:
+- world map navigation screen
+- zoom in/out on map
+- water-only movement with land blocking
+- random encounters while navigating
+- historical missions and open world patrol both route through the map
+- improved tactical AI states in battle
+- mobile-first controls preserved
 
 Notes:
-- vessel images still use current non-transparent renders
-- next image phase can replace them with transparent PNGs without changing structure
+- current world map is a simplified real-world style naval map silhouette, optimized for gameplay.
+- next art phase can replace ship renders with transparent PNG assets without changing the code structure.
