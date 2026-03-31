@@ -2,187 +2,173 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Submarine Commander</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <div class="app-shell">
+  <div class="app">
     <header class="topbar">
       <div>
         <h1>Submarine Commander</h1>
-        <div class="meta">Version v1.3.0 | Build 2026-03-30 22:53:07 | Lobby and Navigation Restore</div>
+        <div class="meta">Version v2.0.0 | Build 2026-03-31 12:54:20 | Restructured Simulator Foundation</div>
       </div>
-      <div class="top-actions">
-        <div class="status-chip" id="loadStatus">Loading assets...</div>
-      </div>
+      <div id="statusChip" class="chip">Carregando...</div>
     </header>
 
-    <main class="layout">
-      <aside class="sidebar">
-        <section class="panel nav-panel">
-          <h2>Navigation</h2>
-          <div class="nav-grid">
-            <button class="nav-btn active" data-screen="lobby">Lobby</button>
-            <button class="nav-btn" data-screen="missions">Missões</button>
-            <button class="nav-btn" data-screen="career">Carreira</button>
-            <button class="nav-btn" data-screen="avatars">Avatares</button>
-            <button class="nav-btn" data-screen="battle">Batalha</button>
-            <button class="nav-btn" data-screen="intel">Intel</button>
+    <section id="screen-start" class="screen active">
+      <div class="panel hero">
+        <div>
+          <h2>Menu inicial</h2>
+          <p>Agora o jogo começa como você pediu: Nova partida, Continuar, seleção de avatar, lobby com loja, missões históricas, mundo aberto e batalha com instrumentos e oficiais.</p>
+          <div class="row">
+            <button id="newGameBtn" class="primary">Nova partida</button>
+            <button id="continueBtn" class="secondary">Continuar</button>
           </div>
-        </section>
+        </div>
+        <img src="./assets/images/vessels/player_sub.png" alt="Submarino" class="hero-img" />
+      </div>
+    </section>
 
-        <section class="panel">
-          <h2>Captain Avatar</h2>
-          <div class="avatar-grid">
-            <button class="avatar-btn selected" data-avatar="captain">
-              <img src="./assets/images/avatars/captain.png" alt="Captain" />
-              <span>Captain</span>
-            </button>
-            <button class="avatar-btn" data-avatar="navigator">
-              <img src="./assets/images/avatars/navigator.png" alt="Navigator" />
-              <span>Navigator</span>
-            </button>
-          </div>
-        </section>
+    <section id="screen-avatar" class="screen">
+      <div class="panel">
+        <h2>Escolha seu avatar</h2>
+        <p class="muted">Dois avatares reais e três espaços provisórios para futuras artes.</p>
+        <div id="avatarGrid" class="avatar-grid"></div>
+        <div class="row">
+          <button id="avatarBackBtn" class="secondary">Voltar</button>
+          <button id="avatarNextBtn" class="primary">Ir para o lobby</button>
+        </div>
+      </div>
+    </section>
 
-        <section class="panel">
-          <h2>Quick Status</h2>
-          <div class="stats" id="quickStats"></div>
-        </section>
-      </aside>
-
-      <section class="main-panel">
-        <section class="screen active" id="screen-lobby">
-          <div class="hero panel">
-            <div class="hero-left">
-              <h2>Lobby restaurado</h2>
-              <p>Agora o jogo voltou a ter tela de lobby, navegação lateral, tela de missões, carreira, avatares, batalha e inteligência, mantendo os visuais premium já integrados.</p>
-              <div class="button-row">
-                <button class="primary" id="startMissionFromLobby">Iniciar Missão</button>
-                <button class="secondary" id="goCareerFromLobby">Ver Carreira</button>
-              </div>
-            </div>
-            <div class="hero-right">
-              <img src="./assets/images/ui/icons.png" alt="UI Icons" />
-            </div>
-          </div>
-          <div class="grid-two">
-            <div class="panel">
-              <h2>Submarino ativo</h2>
-              <div class="ship-card">
-                <img src="./assets/images/vessels/player_sub.png" alt="Player Sub" />
-                <div>
-                  <div class="ship-title">Player Sub</div>
-                  <div class="ship-meta">Velocidade alta | ataque premium | pronto para GitHub Pages</div>
-                </div>
-              </div>
-            </div>
-            <div class="panel">
-              <h2>Resumo operacional</h2>
-              <div class="list-lines" id="summaryBox"></div>
-            </div>
-          </div>
-        </section>
-
-        <section class="screen" id="screen-missions">
-          <div class="grid-two">
-            <div class="panel">
-              <h2>Missões</h2>
-              <div class="mission-list" id="missionList"></div>
-            </div>
-            <div class="panel">
-              <h2>Briefing</h2>
-              <div class="briefing-box" id="briefingBox"></div>
-              <div class="button-row">
-                <button class="primary" id="launchMissionBtn">Iniciar Missão</button>
-                <button class="secondary" id="goBattleBtn">Abrir Batalha</button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="screen" id="screen-career">
-          <div class="grid-two">
-            <div class="panel">
-              <h2>Carreira</h2>
-              <div class="stats big-stats" id="careerStats"></div>
-            </div>
-            <div class="panel">
-              <h2>Frota visual integrada</h2>
-              <div class="fleet-grid">
-                <div class="fleet-item"><img src="./assets/images/vessels/player_sub.png"><span>Player Sub</span></div>
-                <div class="fleet-item"><img src="./assets/images/vessels/escort.png"><span>Escort</span></div>
-                <div class="fleet-item"><img src="./assets/images/vessels/cargo.png"><span>Cargo</span></div>
-                <div class="fleet-item"><img src="./assets/images/vessels/enemy_sub.png"><span>Enemy Sub</span></div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="screen" id="screen-avatars">
+    <section id="screen-lobby" class="screen">
+      <div class="lobby-layout">
+        <aside class="stack">
           <div class="panel">
-            <h2>Seleção de avatar</h2>
-            <div class="grid-two avatars-screen">
-              <div class="avatar-preview">
-                <img id="avatarPreview" src="./assets/images/avatars/captain.png" alt="Avatar Preview">
-              </div>
+            <h2>Comandante</h2>
+            <div class="profile">
+              <img id="profileAvatar" class="profile-avatar" alt="Avatar" />
               <div>
-                <div class="button-row">
-                  <button class="secondary avatar-select-btn" data-avatar="captain">Usar Captain</button>
-                  <button class="secondary avatar-select-btn" data-avatar="navigator">Usar Navigator</button>
+                <div id="profileRank" class="big"></div>
+                <div id="profileStats" class="muted"></div>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <h2>Submarino</h2>
+            <div id="subInfo" class="stats-grid"></div>
+          </div>
+          <div class="panel">
+            <h2>Lobby</h2>
+            <div class="nav-grid">
+              <button class="tab-btn active" data-tab="overview">Visão geral</button>
+              <button class="tab-btn" data-tab="store">Loja</button>
+              <button class="tab-btn" data-tab="missions">Missões</button>
+              <button class="tab-btn" data-tab="openworld">Mundo aberto</button>
+            </div>
+          </div>
+        </aside>
+
+        <main class="stack">
+          <div id="tab-overview" class="panel lobby-tab active">
+            <h2>Centro de operações</h2>
+            <div class="grid-two">
+              <div class="cardBox">
+                <h3>Resumo</h3>
+                <div id="careerSummary" class="muted"></div>
+              </div>
+              <div class="cardBox">
+                <h3>Último relatório</h3>
+                <div id="lastReport" class="muted"></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="tab-store" class="panel lobby-tab">
+            <h2>Loja</h2>
+            <div id="storeList" class="grid-two"></div>
+          </div>
+
+          <div id="tab-missions" class="panel lobby-tab">
+            <h2>Missões históricas</h2>
+            <div class="grid-two">
+              <div id="missionList" class="stack"></div>
+              <div class="cardBox">
+                <h3>Briefing</h3>
+                <div id="missionBrief" class="muted"></div>
+                <div class="row"><button id="launchMissionBtn" class="primary">Iniciar missão</button></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="tab-openworld" class="panel lobby-tab">
+            <h2>Mundo aberto</h2>
+            <p class="muted">Escolha um mapa para patrulhar. Em qualquer momento pode encontrar inimigos.</p>
+            <div id="worldList" class="grid-two"></div>
+            <div class="row"><button id="launchWorldBtn" class="primary">Iniciar patrulha</button></div>
+          </div>
+        </main>
+      </div>
+    </section>
+
+    <section id="screen-battle" class="screen">
+      <div class="battle-layout">
+        <div class="stack">
+          <div class="panel battle-head">
+            <div>
+              <h2 id="battleTitle">Batalha</h2>
+              <div id="battleSub" class="muted"></div>
+            </div>
+            <button id="backLobbyBtn" class="secondary">Voltar ao lobby</button>
+          </div>
+          <div class="panel">
+            <canvas id="battleCanvas" width="1280" height="760"></canvas>
+            <div class="mobile-ui">
+              <div class="dir-pad">
+                <button data-dir="up">▲</button>
+                <div class="row tight">
+                  <button data-dir="left">◀</button>
+                  <button data-dir="stop">■</button>
+                  <button data-dir="right">▶</button>
                 </div>
-                <div class="briefing-box" id="avatarDescription">Capitão principal selecionado.</div>
+                <button data-dir="down">▼</button>
+              </div>
+              <div class="action-pad">
+                <button id="sonarBtn" class="secondary">Sonar</button>
+                <button id="diveBtn" class="secondary">Submergir</button>
+                <button id="torpedoBtn" class="primary">Torpedo</button>
+                <button id="repairBtn" class="danger">Reparos</button>
               </div>
             </div>
           </div>
-        </section>
-
-        <section class="screen" id="screen-battle">
-          <div class="panel battle-controls-panel">
-            <div class="button-row">
-              <button id="fireBtn" class="primary">Fire Torpedo</button>
-              <button id="sonarBtn" class="secondary">Pulse Sonar</button>
-              <button id="surfaceBtn" class="secondary">Submergir / Emergir</button>
-              <button id="resetBtn" class="danger">Reset Mission</button>
+        </div>
+        <aside class="stack">
+          <div class="panel">
+            <h2>Instrumentos</h2>
+            <div class="stats-grid">
+              <div class="stat"><div class="label">Profundidade</div><div id="depthValue" class="value">0 m</div><div class="meter"><div id="depthFill" class="fill"></div></div></div>
+              <div class="stat"><div class="label">Bússola</div><div id="headingValue" class="value">000°</div><div class="meter"><div id="headingFill" class="fill"></div></div></div>
+              <div class="stat"><div class="label">Velocidade</div><div id="speedValue" class="value">0 nós</div><div class="meter"><div id="speedFill" class="fill"></div></div></div>
+              <div class="stat"><div class="label">Casco</div><div id="hullValue" class="value">100%</div><div class="meter"><div id="hullFill" class="fill safe"></div></div></div>
             </div>
           </div>
-          <div class="panel canvas-panel">
-            <canvas id="gameCanvas" width="1200" height="680"></canvas>
-            <div class="hint">Controls: Arrow keys move | Space fires torpedo | S sonar pulse | D dive/surface</div>
-          </div>
-        </section>
-
-        <section class="screen" id="screen-intel">
-          <div class="grid-two">
-            <div class="panel">
-              <h2>Intel</h2>
-              <div class="briefing-box">
-                Escoltas respondem rápido a aproximações.<br><br>
-                Cargueiros são alvos mais fáceis.<br><br>
-                Submarinos inimigos precisam de atenção extra.<br><br>
-                O sonar visual já está integrado nesta build.
-              </div>
+          <div class="panel">
+            <h2>Oficiais</h2>
+            <div class="stack tight">
+              <button class="officerBtn secondary" data-officer="mechanic">Mecânico</button>
+              <button class="officerBtn secondary" data-officer="sonar">Sonarista</button>
+              <button class="officerBtn secondary" data-officer="weapons">Oficial de armas</button>
             </div>
-            <div class="panel">
-              <h2>Assets integrados</h2>
-              <ul class="asset-list">
-                <li>Captain avatar</li>
-                <li>Navigator avatar</li>
-                <li>Player submarine</li>
-                <li>Escort destroyer</li>
-                <li>Cargo ship</li>
-                <li>Enemy submarine</li>
-                <li>Torpedo effect</li>
-                <li>Explosion effect</li>
-                <li>Sonar effect</li>
-                <li>UI icon sheet</li>
-              </ul>
-            </div>
+            <div id="officerFeed" class="muted panel-mini"></div>
           </div>
-        </section>
-      </section>
-    </main>
+          <div class="panel">
+            <h2>Feed tático</h2>
+            <div id="tacticalFeed" class="muted panel-mini"></div>
+          </div>
+        </aside>
+      </div>
+    </section>
   </div>
   <script src="./src/main.js"></script>
 </body>
