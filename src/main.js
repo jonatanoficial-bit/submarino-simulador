@@ -90,7 +90,9 @@ const LAND_POLYS = [
       contacts: [],
       enemies: [],
       torps: [],
-      explosions: []
+      explosions: [],
+      repairTask: null,
+      compartments: { bow: 100, engineRoom: 100, sonarRoom: 100, torpedoRoom: 100 }
     }
   };
 
@@ -179,7 +181,30 @@ const LAND_POLYS = [
     return "Critical";
   }
 
-  function renderAvatarGrid() {
+  
+function normalizeAngle(a) {
+  let v = a % 360;
+  if (v < 0) v += 360;
+  return v;
+}
+
+function angleDiff(a, b) {
+  const d = Math.abs(normalizeAngle(a) - normalizeAngle(b));
+  return Math.min(d, 360 - d);
+}
+
+function enemyHeadingToPlayer(enemy, player) {
+  return normalizeAngle((Math.atan2(player.y - enemy.y, player.x - enemy.x) * 180 / Math.PI) + 90);
+}
+
+function makePatrolOffset(t, ampX, ampY, speed) {
+  return {
+    x: Math.sin(t * speed) * ampX,
+    y: Math.cos(t * speed * 0.8) * ampY
+  };
+}
+
+function renderAvatarGrid() {
     const grid = qs("#avatarGrid");
     grid.innerHTML = "";
     avatars.forEach(a => {
@@ -321,29 +346,85 @@ const LAND_POLYS = [
     state.battle.contacts = [];
     state.battle.torps = [];
     state.battle.explosions = [];
+    state.battle.repairTask = null;
+    state.battle.compartments = { bow: 100, engineRoom: 100, sonarRoom: 100, torpedoRoom: 100 };
     const templates = {
       escort: [
-        { type: "escort", x: 980, y: 220, w: 100, h: 44, hp: 100, speed: 0.22, alive: true, state: "patrol" },
-        { type: "cargo", x: 1030, y: 420, w: 110, h: 50, hp: 90, speed: 0.17, alive: true, state: "patrol" }
+        { type: "escort", x: 980, y: 220, w: 100, h: 44, hp: 100, speed: 0.22, alive: true, state: "patrol", patrolSeed: 0.7, heading: 250, ping: 0 },
+        { type: "cargo", x: 1030, y: 420, w: 110, h: 50, hp: 90, speed: 0.17, alive: true, state: "patrol", patrolSeed: 1.8, heading: 255, ping: 0 }
       ],
       enemySub: [
-        { type: "enemySub", x: 970, y: 540, w: 98, h: 42, hp: 85, speed: 0.18, alive: true, state: "silent" }
+        { type: "enemySub", x: 970, y: 540, w: 98, h: 42, hp: 85, speed: 0.18, alive: true, state: "silent", patrolSeed: 2.4, heading: 240, ping: 0 }
       ],
       cargo: [
-        { type: "cargo", x: 1020, y: 360, w: 110, h: 50, hp: 90, speed: 0.15, alive: true, state: "patrol" }
+        { type: "cargo", x: 1020, y: 360, w: 110, h: 50, hp: 90, speed: 0.15, alive: true, state: "patrol", patrolSeed: 1.1, heading: 255, ping: 0 }
       ]
     };
     state.battle.enemies = templates[encounter.type].map(e => ({ ...e }));
     qs("#battleTitle").textContent = state.battle.title;
     qs("#battleSub").textContent = encounter.text;
     qs("#officerFeed").textContent = "Oficiais aguardando ordens.";
-    qs("#tacticalFeed").textContent = "Nenhum contato confirmado.";
+    qs("#tacticalFeed").textContent = "Nenhum contato confirmado. Mantenha velocidade baixa para melhorar detecção.";
     qs("#fireSolution").textContent = "Aguardando alvo. Dica: reduza velocidade para diminuir ruído e melhorar detecção.";
     updateBattleInstruments();
     show("battle");
   }
 
-  function updateBattleInstruments() {
+  
+  function updateCompartmentPanel() {
+    const c = state.battle.compartments;
+    const lines = [
+      `Proa: ${Math.round(c.bow)}%`,
+      `Casa de máquinas: ${Math.round(c.engineRoom)}%`,
+      `Sala de sonar: ${Math.round(c.sonarRoom)}%`,
+      `Sala de torpedos: ${Math.round(c.torpedoRoom)}%`
+    ];
+    if (state.battle.repairTask) {
+      lines.push(`Reparo em andamento: ${state.battle.repairTask.label} (${Math.ceil(state.battle.repairTask.timeLeft / 60)}s)`);
+    }
+    qs("#compartmentStatus").textContent = lines.join(" | ");
+  }
+
+  function applyCompartmentEffects() {
+    const c = state.battle.compartments;
+    state.battle.engine = Math.min(state.battle.engine, c.engineRoom);
+    state.battle.sonarSys = Math.min(state.battle.sonarSys, c.sonarRoom);
+    state.battle.hull = Math.min(state.battle.hull, (c.bow + c.engineRoom + c.torpedoRoom) / 3);
+  }
+
+  function assignDamageToCompartment(amount) {
+    const roll = Math.random();
+    if (roll < 0.28) state.battle.compartments.bow = Math.max(0, state.battle.compartments.bow - amount);
+    else if (roll < 0.56) state.battle.compartments.engineRoom = Math.max(0, state.battle.compartments.engineRoom - amount);
+    else if (roll < 0.78) state.battle.compartments.sonarRoom = Math.max(0, state.battle.compartments.sonarRoom - amount);
+    else state.battle.compartments.torpedoRoom = Math.max(0, state.battle.compartments.torpedoRoom - amount);
+    applyCompartmentEffects();
+    updateCompartmentPanel();
+  }
+
+  function startRepairTask() {
+    const c = state.battle.compartments;
+    const entries = [
+      ["Proa", "bow", c.bow],
+      ["Casa de máquinas", "engineRoom", c.engineRoom],
+      ["Sala de sonar", "sonarRoom", c.sonarRoom],
+      ["Sala de torpedos", "torpedoRoom", c.torpedoRoom]
+    ].sort((a, b) => a[2] - b[2]);
+    const target = entries[0];
+    if (target[2] >= 100) {
+      qs("#officerFeed").textContent = "Nenhum compartimento precisa de reparo imediato.";
+      return;
+    }
+    state.battle.repairTask = {
+      label: target[0],
+      key: target[1],
+      timeLeft: 360
+    };
+    qs("#officerFeed").textContent = `Equipe iniciou reparo em ${target[0]}.`;
+    updateCompartmentPanel();
+  }
+
+function updateBattleInstruments() {
     const heading = ((Math.round(state.battle.heading) % 360) + 360) % 360;
     const labels = {
       depthValue: `${Math.round(state.battle.depth)} m • ${depthBand(state.battle.depth)}`,
@@ -365,6 +446,7 @@ const LAND_POLYS = [
       el.style.width = pct + "%";
       el.className = "fill " + (pct > 60 ? "safe" : pct > 30 ? "warn" : "danger");
     });
+    updateCompartmentPanel();
   }
 
   function drawImageSafe(ctx, img, x, y, w, h, fallback) {
@@ -535,7 +617,7 @@ const LAND_POLYS = [
     if (diff < 18 && range < 280 && depthOk) quality = "Alta";
     else if (diff < 35 && range < 450) quality = "Média";
     const band = depthBand(state.battle.depth);
-    qs("#fireSolution").textContent = `Alvo principal: ${c.type} | Bearing ${c.bearing}° | Distância ~${range}m | Solução: ${quality} | Faixa: ${band}`;
+    qs("#fireSolution").textContent = `Alvo principal: ${c.type} | Bearing ${c.bearing}° | Distância ~${range}m | Solução: ${quality} | Faixa: ${band} | Dica: alinhe proa e reduza velocidade antes do disparo.`;
   }
 
   function battleLoop() {
@@ -575,6 +657,7 @@ const LAND_POLYS = [
 
       if (state.battle.depth > 220 && Math.random() < 0.04) {
         state.battle.hull -= 0.8;
+        state.battle.compartments.bow = Math.max(0, state.battle.compartments.bow - 0.6);
         qs("#officerFeed").textContent = "Profundidade crítica. Estrutura do casco sob pressão.";
       }
 
@@ -692,7 +775,17 @@ const LAND_POLYS = [
       ctx.fillText(`Contatos: ${state.battle.contacts.length}`, canvas.width - 282, 120);
       if (top) ctx.fillText(`${top.type} • ${top.status} • ~${top.approxDistance}m`, canvas.width - 282, 144);
 
-      qs("#tacticalFeed").textContent = state.battle.contacts.map(c => `${c.type} • ${c.status} • ${c.bearing}° • ~${c.approxDistance}m`).join(" | ") || "Nenhum contato confirmado.";
+      qs("#tacticalFeed").textContent = state.battle.contacts.map(c => `${c.type} • ${c.status} • ${c.bearing}° • ~${c.approxDistance}m`).join(" | ") || "Nenhum contato confirmado. Mantenha velocidade baixa para melhorar detecção.";
+      if (state.battle.repairTask) {
+        state.battle.repairTask.timeLeft -= 1;
+        if (state.battle.repairTask.timeLeft <= 0) {
+          const k = state.battle.repairTask.key;
+          state.battle.compartments[k] = Math.min(100, state.battle.compartments[k] + 22);
+          applyCompartmentEffects();
+          qs("#officerFeed").textContent = `Reparo concluído em ${state.battle.repairTask.label}.`;
+          state.battle.repairTask = null;
+        }
+      }
       updateBattleInstruments();
 
       state.battle.hull = Math.max(0, state.battle.hull);
@@ -763,8 +856,8 @@ const LAND_POLYS = [
 
     qsa("[data-mapdir]").forEach(btn => btn.onclick = () => {
       const d = btn.dataset.mapdir;
-      if (d === "left") state.nav.heading -= 12;
-      if (d === "right") state.nav.heading += 12;
+      if (d === "left") state.nav.heading -= 8;
+      if (d === "right") state.nav.heading += 8;
       if (d === "up") state.nav.speed = Math.min(10, state.nav.speed + 2);
       if (d === "down") state.nav.speed = Math.max(0, state.nav.speed - 2);
       if (d === "stop") state.nav.speed = 0;
@@ -806,10 +899,7 @@ const LAND_POLYS = [
     };
 
     qs("#repairBtn").onclick = () => {
-      state.battle.hull = Math.min(100, state.battle.hull + 6);
-      state.battle.engine = Math.min(100, state.battle.engine + 5);
-      state.battle.sonarSys = Math.min(100, state.battle.sonarSys + 4);
-      qs("#officerFeed").textContent = "Equipe de reparo mobilizada.";
+      startRepairTask();
     };
 
     qsa(".officerBtn").forEach(btn => btn.onclick = () => {

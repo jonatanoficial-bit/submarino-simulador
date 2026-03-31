@@ -1,9 +1,11 @@
 Submarine Commander
-Version: v2.8.0
-Build: 2026-03-31 21:51:15
+Version: v3.0.0
+Build: 2026-03-31 22:01:03
+Phase: Compartments and Timed Repairs
 
-Professional Simulator Phase:
-- smoother and more intuitive movement
-- reduced turning sensitivity
-- gradual acceleration/deceleration
-- crew system now has real tactical impact
+Improvements:
+- damage by compartments
+- timed repairs instead of instant healing
+- bow, engine room, sonar room and torpedo room tracking
+- repair tasks now take time and require prioritization
+- simulation is closer to a real submarine command loop
