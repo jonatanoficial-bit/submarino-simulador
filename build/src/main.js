@@ -7,7 +7,13 @@
   const sonarBtn = document.getElementById('sonarBtn');
   const resetBtn = document.getElementById('resetBtn');
   const surfaceBtn = document.getElementById('surfaceBtn');
-  const statsPanel = document.getElementById('statsPanel');
+  const quickStats = document.getElementById('quickStats');
+  const careerStats = document.getElementById('careerStats');
+  const summaryBox = document.getElementById('summaryBox');
+  const missionList = document.getElementById('missionList');
+  const briefingBox = document.getElementById('briefingBox');
+  const avatarPreview = document.getElementById('avatarPreview');
+  const avatarDescription = document.getElementById('avatarDescription');
 
   const ASSET_PATHS = {
     playerSub: './assets/images/vessels/player_sub.png',
@@ -19,9 +25,19 @@
     sonar: './assets/images/effects/sonar.png',
   };
 
+  const missions = [
+    { id: 'patrol', name: 'Patrulha no Atlântico', text: 'Localize e ataque um comboio leve sem perder o submarino.' },
+    { id: 'intercept', name: 'Interceptação de Comboio', text: 'Destrua escolta e cargueiro. Use sonar com inteligência.' },
+    { id: 'hunter', name: 'Caça Submarina', text: 'Um submarino inimigo foi detectado. Ataque antes de ser detectado.' }
+  ];
+
   const assets = {};
   const avatarButtons = [...document.querySelectorAll('.avatar-btn')];
+  const navButtons = [...document.querySelectorAll('.nav-btn')];
+  const screenEls = [...document.querySelectorAll('.screen')];
+  const avatarSelectButtons = [...document.querySelectorAll('.avatar-select-btn')];
   let selectedAvatar = 'captain';
+  let selectedMission = missions[0];
 
   function loadImage(key, src){
     return new Promise((resolve) => {
@@ -35,7 +51,6 @@
   function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
 
   const state = {
-    ready: false,
     loaded: 0,
     total: Object.keys(ASSET_PATHS).length,
     player: { x: 190, y: 350, w: 270, h: 120, hp: 100, torpedoes: 6, submerged: false },
@@ -44,6 +59,8 @@
     explosions: [],
     sonarPulse: 0,
     kills: 0,
+    credits: 320,
+    xp: 180,
     frame: 0
   };
 
@@ -62,21 +79,61 @@
     state.player.y = 350;
     state.player.submerged = false;
     state.sonarPulse = 0;
+    renderStats();
   }
 
-  function updateStats(){
-    const stats = [
-      ['Hull', `${Math.round(state.player.hp)}%`],
-      ['Torpedoes', state.player.torpedoes],
-      ['Mode', state.player.submerged ? 'Submerged' : 'Surface'],
-      ['Kills', state.kills]
-    ];
-    statsPanel.innerHTML = stats.map(([label, value]) => `
-      <div class="stat">
-        <div class="label">${label}</div>
-        <div class="value">${value}</div>
-      </div>
-    `).join('');
+  function statBlock(label, value){
+    return `<div class="stat"><div class="label">${label}</div><div class="value">${value}</div></div>`;
+  }
+
+  function renderStats(){
+    quickStats.innerHTML = [
+      statBlock('Hull', `${Math.round(state.player.hp)}%`),
+      statBlock('Torpedoes', state.player.torpedoes),
+      statBlock('Mode', state.player.submerged ? 'Submerged' : 'Surface'),
+      statBlock('Kills', state.kills)
+    ].join('');
+
+    careerStats.innerHTML = [
+      statBlock('XP', state.xp),
+      statBlock('Credits', state.credits),
+      statBlock('Avatar', selectedAvatar),
+      statBlock('Mission', selectedMission.name),
+      statBlock('Assets', `${state.loaded}/${state.total}`),
+      statBlock('Build', 'v1.3.0')
+    ].join('');
+
+    summaryBox.innerHTML = [
+      'Lobby restaurado com navegação lateral.',
+      'Tela de missões com briefing funcional.',
+      'Tela de carreira com frota visual.',
+      'Seleção de avatar separada.',
+      'Batalha com sonar, torpedo e submersão.'
+    ].join('<br>');
+  }
+
+  function renderMissionList(){
+    missionList.innerHTML = '';
+    missions.forEach(m => {
+      const div = document.createElement('div');
+      div.className = 'mission-item' + (m.id === selectedMission.id ? ' active' : '');
+      div.innerHTML = `<strong>${m.name}</strong><div style="color:#9eb8cb;margin-top:6px">${m.text}</div>`;
+      div.onclick = () => {
+        selectedMission = m;
+        renderMissionList();
+        briefingBox.innerHTML = `<strong>${m.name}</strong><br><br>${m.text}`;
+        renderStats();
+      };
+      missionList.appendChild(div);
+    });
+    briefingBox.innerHTML = `<strong>${selectedMission.name}</strong><br><br>${selectedMission.text}`;
+  }
+
+  function showScreen(screen){
+    screenEls.forEach(el => el.classList.remove('active'));
+    navButtons.forEach(btn => btn.classList.remove('active'));
+    document.getElementById('screen-' + screen).classList.add('active');
+    document.querySelector(`.nav-btn[data-screen="${screen}"]`).classList.add('active');
   }
 
   function drawFallbackSub(x, y, w, h, color){
@@ -148,22 +205,20 @@
       () => drawFallbackSub(p.x, p.y, p.w, p.h, p.submerged ? '#8fe9ff' : '#55c8ff')
     );
 
-    if (selectedAvatar === 'captain' || selectedAvatar === 'navigator') {
-      const avatarImg = document.querySelector(`.avatar-btn[data-avatar="${selectedAvatar}"] img`);
-      if (avatarImg && avatarImg.complete) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(100, 95, 42, 0, Math.PI * 2);
-        ctx.closePath();
-        ctx.clip();
-        ctx.drawImage(avatarImg, 58, 53, 84, 84);
-        ctx.restore();
-        ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(100, 95, 42, 0, Math.PI * 2);
-        ctx.stroke();
-      }
+    const avatarImg = document.querySelector(`.avatar-btn[data-avatar="${selectedAvatar}"] img`);
+    if (avatarImg && avatarImg.complete) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(100, 95, 42, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(avatarImg, 58, 53, 84, 84);
+      ctx.restore();
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(100, 95, 42, 0, Math.PI * 2);
+      ctx.stroke();
     }
   }
 
@@ -223,40 +278,32 @@
     ctx.font = '16px Arial';
     ctx.fillText(`Avatar: ${selectedAvatar}`, canvas.width - 212, 48);
     ctx.fillText(`Loaded assets: ${state.loaded}/${state.total}`, canvas.width - 212, 74);
-    ctx.fillText(`Mission: Atlantic Patrol`, canvas.width - 212, 100);
+    ctx.fillText(`Mission: ${selectedMission.name}`, canvas.width - 212, 100);
   }
 
   function fireTorpedo(){
     if (state.player.torpedoes <= 0) return;
     state.player.torpedoes -= 1;
-    state.torpedoes.push({
-      x: state.player.x + 110,
-      y: state.player.y,
-      vx: 7.2
-    });
-    updateStats();
+    state.torpedoes.push({ x: state.player.x + 110, y: state.player.y, vx: 7.2 });
+    renderStats();
   }
 
-  function sonarPulse(){
-    state.sonarPulse = 100;
-  }
+  function sonarPulse(){ state.sonarPulse = 100; }
 
   function toggleDive(){
     state.player.submerged = !state.player.submerged;
     state.player.h = state.player.submerged ? 96 : 120;
-    updateStats();
+    renderStats();
   }
 
   function update(){
     state.frame += 1;
     if (state.sonarPulse > 0) state.sonarPulse -= 1;
-
     for (const e of state.enemies) {
       if (!e.alive) continue;
       e.x -= e.speed;
       if (e.x < 700) e.x += Math.sin(state.frame / 25) * 0.6;
     }
-
     for (const t of state.torpedoes) t.x += t.vx;
     for (const ex of state.explosions) ex.life -= 1;
 
@@ -275,7 +322,7 @@
             e.alive = false;
             state.kills += 1;
           }
-          updateStats();
+          renderStats();
         }
       }
     }
@@ -315,18 +362,49 @@
   fireBtn.addEventListener('click', fireTorpedo);
   sonarBtn.addEventListener('click', sonarPulse);
   surfaceBtn.addEventListener('click', toggleDive);
-  resetBtn.addEventListener('click', () => {
-    makeEnemies();
-    updateStats();
-  });
+  resetBtn.addEventListener('click', makeEnemies);
+
+  document.getElementById('startMissionFromLobby').onclick = () => showScreen('battle');
+  document.getElementById('goCareerFromLobby').onclick = () => showScreen('career');
+  document.getElementById('launchMissionBtn').onclick = () => showScreen('battle');
+  document.getElementById('goBattleBtn').onclick = () => showScreen('battle');
 
   avatarButtons.forEach((btn) => {
     btn.addEventListener('click', () => {
       avatarButtons.forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
       selectedAvatar = btn.dataset.avatar;
+      avatarPreview.src = btn.querySelector('img').src;
+      avatarDescription.textContent = selectedAvatar === 'captain'
+        ? 'Captain selecionado: perfil de liderança e presença forte.'
+        : 'Navigator selecionado: perfil estratégico com binóculo e leitura tática.';
+      renderStats();
     });
   });
+
+  avatarSelectButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedAvatar = btn.dataset.avatar;
+      const ref = document.querySelector(`.avatar-btn[data-avatar="${selectedAvatar}"]`);
+      avatarButtons.forEach(b => b.classList.remove('selected'));
+      ref.classList.add('selected');
+      avatarPreview.src = ref.querySelector('img').src;
+      avatarDescription.textContent = selectedAvatar === 'captain'
+        ? 'Captain selecionado: perfil de liderança e presença forte.'
+        : 'Navigator selecionado: perfil estratégico com binóculo e leitura tática.';
+      renderStats();
+    });
+  });
+
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', () => showScreen(btn.dataset.screen));
+  });
+
+  function initUI(){
+    renderMissionList();
+    renderStats();
+    makeEnemies();
+  }
 
   Promise.all(Object.entries(ASSET_PATHS).map(([key, src]) => loadImage(key, src))).then((results) => {
     let okCount = 0;
@@ -335,12 +413,10 @@
       if (r.ok) okCount += 1;
     }
     state.loaded = okCount;
-    state.ready = true;
     loadStatus.textContent = okCount === state.total
       ? 'Assets loaded successfully'
       : `Loaded ${okCount}/${state.total} assets`;
-    updateStats();
-    makeEnemies();
+    initUI();
     loop();
   });
 })();
