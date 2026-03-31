@@ -1,8 +1,9 @@
 Submarine Commander
-Version: v2.7.0
-Build: 2026-03-31 21:00:34
+Version: v2.8.0
+Build: 2026-03-31 21:51:15
 
-Enhancements:
-- crew/upgrade now impacts stealth and detection
-- improved tactical realism (noise vs sonar)
-- reduced arcade feel further
+Professional Simulator Phase:
+- smoother and more intuitive movement
+- reduced turning sensitivity
+- gradual acceleration/deceleration
+- crew system now has real tactical impact
