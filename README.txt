@@ -1,8 +1,8 @@
 Submarine Commander
-Version: v2.5.0
-Build: 2026-03-31 20:44:51
+Version: v2.7.0
+Build: 2026-03-31 21:00:34
 
-Improvements:
-- smarter enemy reactions
-- better fire solution guidance
-- gameplay tuning
+Enhancements:
+- crew/upgrade now impacts stealth and detection
+- improved tactical realism (noise vs sonar)
+- reduced arcade feel further
