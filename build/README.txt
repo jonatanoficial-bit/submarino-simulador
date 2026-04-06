@@ -1,11 +1,14 @@
 Submarine Commander
-Version: v3.0.0
-Build: 2026-03-31 22:01:03
-Phase: Compartments and Timed Repairs
+Version: v3.4.0
+Build: 2026-04-06 18:31:30
+Phase: Integrated Systems Prototype
 
-Improvements:
-- damage by compartments
-- timed repairs instead of instant healing
-- bow, engine room, sonar room and torpedo room tracking
-- repair tasks now take time and require prioritization
-- simulation is closer to a real submarine command loop
+Integrated in this build:
+- click-to-course map navigation
+- tactical battle
+- periscope screen with left/right control
+- manual torpedo launch
+- flooding integrated into battle loop
+- crew fatigue integrated into battle loop
+- priority orders: repair, attack, stealth
+- compartment damage and timed repairs
