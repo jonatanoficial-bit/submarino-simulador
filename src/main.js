@@ -21,7 +21,8 @@ const state={
   compartments:{bow:100,engineRoom:100,sonarRoom:100,torpedoRoom:100},
   repairTask:null
  },
- periscope:{angle:0}
+ periscope:{angle:0},
+ events:[]
 };
 
 function saveState(){localStorage.setItem(saveKey,JSON.stringify(state.career));}
@@ -34,12 +35,34 @@ function depthBand(d){if(d===0)return 'Surface'; if(d<=20)return 'Periscope'; if
 function pointInPoly(x,y,poly){let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const xi=poly[i][0],yi=poly[i][1],xj=poly[j][0],yj=poly[j][1];const intersect=((yi>y)!==(yj>y))&&(x<((xj-xi)*(y-yi))/((yj-yi)||1e-9)+xi);if(intersect)inside=!inside;}return inside;}
 function isLand(x,y){return LAND_POLYS.some(poly=>pointInPoly(x,y,poly));}
 
+
+function pushEvent(msg){
+ if(!state.events) state.events=[];
+ state.events.unshift(msg);
+ state.events = state.events.slice(0,6);
+}
+
+function updateAlarmPanel(){
+ const alarms=[];
+ if(state.battle.flooding>0.5) alarms.push(`Inundação ${state.battle.flooding.toFixed(1)}`);
+ if(state.battle.fatigue>50) alarms.push(`Fadiga elevada ${state.battle.fatigue.toFixed(0)}%`);
+ if(state.battle.hull<45) alarms.push(`Casco crítico ${Math.round(state.battle.hull)}%`);
+ if(state.battle.engine<45) alarms.push(`Motor comprometido ${Math.round(state.battle.engine)}%`);
+ if(state.battle.sonar<45) alarms.push(`Sonar comprometido ${Math.round(state.battle.sonar)}%`);
+ if(state.battle.depth>140) alarms.push(`Profundidade crítica ${Math.round(state.battle.depth)}m`);
+ const lines = alarms.length ? alarms.join(' | ') : 'Nenhum alarme crítico.';
+ const recent = (state.events||[]).slice(0,3).join(' | ');
+ qs('#alarmBox').textContent = recent ? `${lines} | Eventos: ${recent}` : lines;
+}
+
+
 function updateCareer(){state.career.rank=rankFromXP(state.career.xp);qs('#careerBox').textContent=`Patente: ${state.career.rank} | XP: ${state.career.xp} | Créditos: ${state.career.credits}`;}
 function updateMapPanel(){qs('#mapStatus').textContent=`Curso ${Math.round(normalizeAngle(state.nav.heading))}° | Velocidade ${state.nav.speed.toFixed(0)} nós | Zoom ${state.nav.zoom.toFixed(1)}x`;qs('#encounterBox').textContent=state.nav.encounter?state.nav.encounter.text:'Nenhum contato no momento.';}
 function updateCompartments(){const c=state.battle.compartments;let t=`Proa ${Math.round(c.bow)}% | Máquinas ${Math.round(c.engineRoom)}% | Sonar ${Math.round(c.sonarRoom)}% | Torpedos ${Math.round(c.torpedoRoom)}%`;if(state.battle.repairTask)t+=` | Reparo ${state.battle.repairTask.label} ${Math.ceil(state.battle.repairTask.timeLeft/60)}s`;qs('#compartmentBox').textContent=t;}
 function updateSystemPanels(){
- qs('#systemsBox').textContent=`Inundação ${state.battle.flooding.toFixed(1)} | Fadiga ${state.battle.fatigue.toFixed(1)} | Eficiência ${Math.max(25,100-state.battle.fatigue).toFixed(0)}%`;
+ qs('#systemsBox').textContent=`Inundação ${state.battle.flooding.toFixed(1)} | Fadiga ${state.battle.fatigue.toFixed(1)} | Eficiência ${Math.max(15,100-state.battle.fatigue).toFixed(0)}%`;
  qs('#priorityBox').textContent=`Prioridade atual: ${state.battle.priority}`;
+ updateAlarmPanel();
 }
 function updateBattlePanels(){
  qs('#battleStatus').textContent=`Profundidade ${Math.round(state.battle.depth)}m (${depthBand(state.battle.depth)}) | Curso ${Math.round(normalizeAngle(state.battle.heading))}° | Velocidade ${state.battle.speed.toFixed(1)} nós | Casco ${Math.round(state.battle.hull)}% | Motor ${Math.round(state.battle.engine)}% | Sonar ${Math.round(state.battle.sonar)}% | Torpedos ${state.battle.torpedoes}`;
@@ -65,6 +88,7 @@ function resetBattle(type='escort'){
  qs('#fireSolution').textContent='Aguardando contato. Use sonar e alinhe a proa.';
  qs('#battleInfo').textContent='Use sonar, curso, profundidade e prioridades para preparar o disparo.';
  qs('#periscopeInfo').textContent='Alinhe o alvo no centro.';
+ pushEvent('Contato hostil confirmado. Tripulação em postos de combate.');
  updateBattlePanels();
 }
 
@@ -77,7 +101,8 @@ function assignDamage(amount){
  state.battle.hull=Math.min(state.battle.hull,(c.bow+c.engineRoom+c.torpedoRoom)/3);
  state.battle.engine=Math.min(state.battle.engine,c.engineRoom);
  state.battle.sonar=Math.min(state.battle.sonar,c.sonarRoom);
- state.battle.flooding=Math.min(20,state.battle.flooding+0.3);
+ state.battle.flooding=Math.min(20,state.battle.flooding+0.45);
+ if(amount>4) pushEvent('Impacto no casco. Compartimentos comprometidos.');
  updateBattlePanels();
 }
 
@@ -92,6 +117,7 @@ function startRepair(){
  if(state.battle.priority==='stealth') time=360;
  state.battle.repairTask={label:arr[0][0],key:arr[0][1],timeLeft:time};
  qs('#battleInfo').textContent=`Reparo iniciado em ${arr[0][0]}.`;
+ pushEvent(`Equipe iniciou reparo em ${arr[0][0]}.`);
  updateBattlePanels();
 }
 
@@ -127,6 +153,7 @@ function fireTorpedo(boost=1){
  state.battle.torpedoes-=1;
  state.battle.torps.push({x:state.battle.player.x+Math.cos(a)*50,y:state.battle.player.y+Math.sin(a)*50,vx:Math.cos(a)*8*spread,vy:Math.sin(a)*8*spread});
  qs('#fireSolution').textContent=`Disparo realizado. Qualidade ${spread>0.85?'Alta':spread>0.6?'Média':'Baixa'}.`;
+ pushEvent(spread>0.85?'Torpedo lançado em excelente solução.':'Torpedo lançado com solução imperfeita.');
  updateBattlePanels();
 }
 
@@ -175,12 +202,19 @@ function drawBattle(){
  p.x=Math.max(140,Math.min(520,p.x+Math.cos((state.battle.heading-90)*Math.PI/180)*move));
  p.y=Math.max(100,Math.min(660,p.y+Math.sin((state.battle.heading-90)*Math.PI/180)*move));
 
- state.battle.fatigue=Math.min(100,state.battle.fatigue+0.01+(state.battle.priority==='attack'?0.015:0.008));
+ state.battle.fatigue=Math.min(100,state.battle.fatigue+0.012+(state.battle.priority==='attack'?0.02:state.battle.priority==='repair'?0.01:0.008));
+ const fatiguePenalty=Math.max(0.45,1-state.battle.fatigue/140);
+ state.battle.targetSpeed=Math.min(state.battle.targetSpeed, 10*fatiguePenalty);
  if(state.battle.flooding>0){
-  state.battle.hull=Math.max(0,state.battle.hull-state.battle.flooding*0.015);
-  if(Math.random()<0.02) state.battle.engine=Math.max(0,state.battle.engine-state.battle.flooding*0.01);
+  state.battle.hull=Math.max(0,state.battle.hull-state.battle.flooding*0.02);
+  if(Math.random()<0.025) state.battle.engine=Math.max(0,state.battle.engine-state.battle.flooding*0.012);
+  if(Math.random()<0.015) state.battle.sonar=Math.max(0,state.battle.sonar-state.battle.flooding*0.01);
+  if(state.battle.flooding>8 && Math.random()<0.01) pushEvent('Água avançando para outros compartimentos.');
  }
- if(state.battle.depth>140&&Math.random()<0.02)assignDamage(0.6);
+ if(state.battle.depth>140&&Math.random()<0.025){
+  assignDamage(0.8);
+  pushEvent('Estrutura sob pressão extrema.');
+ }
 
  if(state.battle.pulse>0){
   ctx.save(); ctx.globalAlpha=Math.min(0.5,state.battle.pulse/100); ctx.strokeStyle='rgba(100,220,255,0.35)';
@@ -245,11 +279,14 @@ function drawBattle(){
   if(state.battle.repairTask.timeLeft<=0){
    const key=state.battle.repairTask.key;
    state.battle.compartments[key]=Math.min(100,state.battle.compartments[key]+22);
+   state.battle.flooding=Math.max(0,state.battle.flooding-0.8);
    state.battle.repairTask=null;
    qs('#battleInfo').textContent='Reparo concluído.';
+   pushEvent('Reparo concluído e contenção parcial da água realizada.');
   }
  }
 
+ if(state.battle.hull<=25 && Math.random()<0.01) pushEvent('Alarme geral. Submarino em risco de perda total.');
  updateBattlePanels();
  requestAnimationFrame(drawBattle);
 }
@@ -299,7 +336,7 @@ function init(){
  qsa('[data-speed]').forEach(btn=>btn.onclick=()=>{state.battle.targetSpeed=Math.max(0,Math.min(10,state.battle.targetSpeed+Number(btn.dataset.speed)));});
  qsa('[data-turn]').forEach(btn=>btn.onclick=()=>{state.battle.targetHeading+=Number(btn.dataset.turn);});
  qsa('[data-peri]').forEach(btn=>btn.onclick=()=>{state.periscope.angle+=Number(btn.dataset.peri);});
- qsa('.priorityBtn').forEach(btn=>btn.onclick=()=>{state.battle.priority=btn.dataset.priority; updateSystemPanels();});
+ qsa('.priorityBtn').forEach(btn=>btn.onclick=()=>{state.battle.priority=btn.dataset.priority; pushEvent(`Prioridade alterada para ${btn.dataset.priority}.`); updateSystemPanels();});
  qs('#btnPatrol').onclick=()=>{
   if(!state.nav.encounter){
    const type=Math.random()<0.5?'escort':'enemySub';
@@ -331,9 +368,9 @@ function init(){
    if(e.key===' ') {e.preventDefault(); fireTorpedo(0.95);}
    if(e.key.toLowerCase()==='s')state.battle.pulse=100;
    if(e.key.toLowerCase()==='p'){state.battle.targetDepth=20; show('periscope');}
-   if(e.key==='1')state.battle.priority='repair';
-   if(e.key==='2')state.battle.priority='attack';
-   if(e.key==='3')state.battle.priority='stealth';
+   if(e.key==='1'){state.battle.priority='repair'; pushEvent('Prioridade alterada para repair.');}
+   if(e.key==='2'){state.battle.priority='attack'; pushEvent('Prioridade alterada para attack.');}
+   if(e.key==='3'){state.battle.priority='stealth'; pushEvent('Prioridade alterada para stealth.');}
   }
   if(qs('#screen-periscope').classList.contains('active')){
    if(e.key==='ArrowLeft')state.periscope.angle-=4;
@@ -343,7 +380,7 @@ function init(){
   updateSystemPanels();
  });
 
- drawMap(); drawBattle(); drawPeriscope(); updateSystemPanels();
+ drawMap(); drawBattle(); drawPeriscope(); updateSystemPanels(); updateAlarmPanel();
 }
 init();
 })();

@@ -1,14 +1,12 @@
 Submarine Commander
-Version: v3.4.0
-Build: 2026-04-06 18:31:30
-Phase: Integrated Systems Prototype
+Version: v3.5.0
+Build: 2026-04-06 18:59:10
+Phase: Flooding Consequences and Dramatic Events
 
-Integrated in this build:
-- click-to-course map navigation
-- tactical battle
-- periscope screen with left/right control
-- manual torpedo launch
-- flooding integrated into battle loop
-- crew fatigue integrated into battle loop
-- priority orders: repair, attack, stealth
-- compartment damage and timed repairs
+Integrated and improved in this build:
+- flooding now has stronger consequences
+- fatigue now reduces effective performance
+- alarm panel with dramatic event messages
+- repair priority more meaningful
+- combat events are more dramatic
+- map, battle, periscope and human systems remain integrated
