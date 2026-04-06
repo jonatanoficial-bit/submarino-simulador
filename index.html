@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>Submarine Commander v3.6.0</title>
+<title>Submarine Commander v3.7.0</title>
 <link rel="stylesheet" href="./styles.css"/>
 </head>
 <body>
@@ -11,26 +11,26 @@
   <header class="topbar">
     <div>
       <h1>Submarine Commander</h1>
-      <div class="meta">Version v3.6.0 | Build 2026-04-06 21:42:36 | Integrated Store + Ship Images + Stability Fix</div>
+      <div class="meta">Version v3.7.0 | Build 2026-04-06 22:13:48 | Structural Fix + Functional Map</div>
     </div>
-    <div class="chip" id="statusChip">Build estável</div>
+    <div class="chip" id="statusChip">Correção estrutural</div>
   </header>
 
   <section id="screen-start" class="screen active">
     <div class="panel hero">
       <div>
-        <h2>Build completa com correção</h2>
-        <p>Esta versão substitui a base com erro de inicialização por uma build estável, inclui as imagens já geradas dentro do projeto e adiciona uma loja de embarcações no lobby.</p>
+        <h2>Build corrigida</h2>
+        <p>Esta versão corrige o erro de inicialização por bind em elemento inexistente, reorganiza a inicialização por telas e mantém a loja de embarcações com as imagens já integradas.</p>
         <div class="row">
           <button id="btnNewGame" class="primary">Nova partida</button>
           <button id="btnContinue" class="secondary">Continuar</button>
         </div>
       </div>
       <div class="heroBox">
-        <div>Loja de embarcações</div>
-        <div>Mapa por clique</div>
+        <div>Mapa funcional</div>
+        <div>Loja no lobby</div>
         <div>Combate + Periscópio</div>
-        <div>Assets já integrados</div>
+        <div>Sem crash no init</div>
       </div>
     </div>
   </section>
@@ -69,7 +69,7 @@
         </div>
         <div class="panel tabScreen" id="tab-mission">
           <h2>Operação Atlântico</h2>
-          <div class="muted">Escolha sua embarcação no lobby, navegue pelo mapa clicando no mar, detecte um contato e decida quando entrar em combate. O periscópio continua disponível para ataque manual.</div>
+          <div class="muted">Escolha a nave, entre no mapa, clique no mar para definir o curso e use o periscópio no combate para um disparo mais preciso.</div>
           <div class="row" style="margin-top:12px;">
             <button id="btnStartMission" class="primary">Entrar no mapa</button>
           </div>
@@ -85,7 +85,7 @@
           <div class="bar">
             <div>
               <h2>Mapa naval</h2>
-              <div class="muted" id="mapInfo">Clique no mar para definir o curso. A proa gira para o destino.</div>
+              <div class="muted" id="mapInfo">Clique no mar para definir o curso. A embarcação gira e navega até o destino.</div>
             </div>
             <div class="row">
               <button id="btnPatrol" class="primary">Patrulhar setor</button>
@@ -116,7 +116,7 @@
           <div class="bar">
             <div>
               <h2>Combate tático</h2>
-              <div class="muted" id="battleInfo">Use sonar, curso, profundidade e o periscópio para preparar o disparo.</div>
+              <div class="muted" id="battleInfo">Use sonar, velocidade, profundidade e o periscópio.</div>
             </div>
             <div class="row">
               <button id="btnPeriscope" class="primary">Periscópio</button>

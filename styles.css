@@ -1,5 +1,5 @@
 
-:root{--bg:#06111a;--panel:#0c1b28;--line:#23455e;--text:#edf6ff;--muted:#9eb8cb;--accent:#55c8ff;--danger:#ff7a7a;--warn:#ffd57c;--ok:#67e29a}
+:root{--bg:#06111a;--panel:#0c1b28;--line:#23455e;--text:#edf6ff;--muted:#9eb8cb;--accent:#55c8ff;--ok:#67e29a}
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter,Arial,sans-serif;background:linear-gradient(180deg,#08131e,#05101a);color:var(--text)}
 .app{padding:14px;max-width:1500px;margin:0 auto}
@@ -15,12 +15,11 @@ h1{margin:0 0 6px;font-size:40px}h2{margin:0 0 10px}.meta,.muted{color:var(--mut
 .combat{grid-template-columns:1fr 320px}
 .stack{display:flex;flex-direction:column;gap:16px}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.wrap{flex-wrap:wrap}.bar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.bar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
 button{border:none;border-radius:14px;padding:12px 14px;font-weight:700;cursor:pointer}
 .primary{background:var(--accent);color:#062032}.secondary{background:#17334a;color:var(--text)}button:disabled{opacity:.5;cursor:not-allowed}
 canvas{width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--line);background:#0c2740}
 .touchbar{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
-.touchbar.small{grid-template-columns:repeat(3,1fr)}
 .touchbar.grid9{grid-template-columns:repeat(5,1fr)}
 .periscopeBar{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:10px}
 .periControls{justify-content:center;padding:12px}
