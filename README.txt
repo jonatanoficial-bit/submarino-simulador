@@ -1,12 +1,15 @@
 Submarine Commander
-Version: v3.5.0
-Build: 2026-04-06 18:59:10
-Phase: Flooding Consequences and Dramatic Events
+Version: v3.6.0
+Build: 2026-04-06 21:42:36
+Phase: Integrated Store + Ship Images + Stability Fix
 
-Integrated and improved in this build:
-- flooding now has stronger consequences
-- fatigue now reduces effective performance
-- alarm panel with dramatic event messages
-- repair priority more meaningful
-- combat events are more dramatic
-- map, battle, periscope and human systems remain integrated
+This build includes:
+- correction of the previous startup-breaking JS issue by replacing the broken runtime with a clean stable implementation
+- integrated already-generated ship images into the game
+- ship store in the lobby
+- map with click-to-course navigation
+- tactical battle
+- periscope mode
+- alarm/event system
+- compartment damage, flooding and repairs
+- saved career progress

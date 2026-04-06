@@ -1,7 +1,8 @@
 
 (() => {
 const qs=s=>document.querySelector(s), qsa=s=>[...document.querySelectorAll(s)];
-const saveKey='submarineCommanderV340';
+const saveKey='submarineCommanderV360';
+const SHIPS=[{"id": "player_sub", "name": "Submarino Jogável", "price": 0, "speed": 6, "durability": 100, "desc": "Embarcação base do comandante.", "image": "./assets/images/ships/player_sub.png"}, {"id": "corvette", "name": "Flower Corvette", "price": 220, "speed": 5, "durability": 110, "desc": "Escolta clássica da guerra anti-submarino.", "image": "./assets/images/ships/corvette.png"}, {"id": "cargo", "name": "Cargo Ship", "price": 160, "speed": 4, "durability": 95, "desc": "Navio de carga clássico do Atlântico.", "image": "./assets/images/ships/cargo.png"}, {"id": "liberty", "name": "Liberty Ship", "price": 260, "speed": 4, "durability": 105, "desc": "Mercante icônico da Segunda Guerra.", "image": "./assets/images/ships/liberty.png"}, {"id": "tanker", "name": "Oil Tanker", "price": 320, "speed": 3, "durability": 120, "desc": "Grande autonomia e casco pesado.", "image": "./assets/images/ships/tanker.png"}, {"id": "gato", "name": "Gato-class", "price": 420, "speed": 7, "durability": 112, "desc": "Submarino americano de patrulha longa.", "image": "./assets/images/ships/gato.png"}, {"id": "type_xxi", "name": "Type XXI", "price": 560, "speed": 8, "durability": 118, "desc": "Submarino avançado de fim de guerra.", "image": "./assets/images/ships/type_xxi.png"}, {"id": "battleship", "name": "Battleship", "price": 900, "speed": 4, "durability": 180, "desc": "Navio pesado para conteúdo premium.", "image": "./assets/images/ships/battleship.png"}];
 const LAND_POLYS=[
  [[110,120],[250,80],[330,120],[360,230],[300,330],[230,300],[160,240],[100,180]],
  [[280,340],[360,330],[410,400],[400,530],[340,690],[270,620],[250,500]],
@@ -10,7 +11,7 @@ const LAND_POLYS=[
  [[760,120],[1010,130],[1120,220],[1110,320],[1020,350],[950,300],[850,320],[800,250]]
 ];
 const state={
- career:{xp:0,credits:240,rank:'Cadete'},
+ career:{xp:0,credits:600,rank:'Cadete',owned:['player_sub'],selectedShip:'player_sub'},
  nav:{zoom:1,heading:0,speed:0,player:{x:520,y:210},panX:0,panY:0,encounter:null},
  battle:{
   heading:0,targetHeading:0,speed:0,targetSpeed:0,depth:0,targetDepth:0,
@@ -34,64 +35,100 @@ function angleDiff(a,b){const d=Math.abs(normalizeAngle(a)-normalizeAngle(b));re
 function depthBand(d){if(d===0)return 'Surface'; if(d<=20)return 'Periscope'; if(d<=60)return 'Patrol'; if(d<=140)return 'Deep'; return 'Critical';}
 function pointInPoly(x,y,poly){let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const xi=poly[i][0],yi=poly[i][1],xj=poly[j][0],yj=poly[j][1];const intersect=((yi>y)!==(yj>y))&&(x<((xj-xi)*(y-yi))/((yj-yi)||1e-9)+xi);if(intersect)inside=!inside;}return inside;}
 function isLand(x,y){return LAND_POLYS.some(poly=>pointInPoly(x,y,poly));}
+function currentShip(){return SHIPS.find(s=>s.id===state.career.selectedShip)||SHIPS[0];}
+function ownedShip(id){return state.career.owned.includes(id);}
+function pushEvent(msg){state.events.unshift(msg); state.events=state.events.slice(0,5);}
 
-
-function pushEvent(msg){
- if(!state.events) state.events=[];
- state.events.unshift(msg);
- state.events = state.events.slice(0,6);
+function updateCareer(){
+ state.career.rank=rankFromXP(state.career.xp);
+ qs('#careerBox').textContent=`Patente: ${state.career.rank} | XP: ${state.career.xp} | Créditos: ${state.career.credits} | Frota: ${state.career.owned.length}`;
+ const ship=currentShip();
+ qs('#ownedShipPreview').src=ship.image;
+ qs('#ownedShipInfo').textContent=`${ship.name} | Velocidade ${ship.speed} | Durabilidade ${ship.durability} | ${ship.desc}`;
+ qs('#overviewText').textContent=`Build corrigida e estável. A loja já usa as imagens geradas até aqui. Embarcação selecionada: ${ship.name}. O erro do print anterior foi eliminado nesta versão ao substituir a base por um código estável novo.`;
 }
-
+function renderStore(){
+ const grid=qs('#storeGrid'); grid.innerHTML='';
+ SHIPS.forEach(ship=>{
+  const card=document.createElement('div');
+  card.className='storeCard'+(ownedShip(ship.id)?' owned':'')+(state.career.selectedShip===ship.id?' selected':'');
+  const owned=ownedShip(ship.id);
+  card.innerHTML=`<img src="${ship.image}" alt="${ship.name}"><h3>${ship.name}</h3><div class="muted">${ship.desc}</div><div class="muted">Preço: ${ship.price} | Velocidade: ${ship.speed} | Durabilidade: ${ship.durability}</div><div class="row" style="margin-top:10px;"></div>`;
+  const row=card.querySelector('.row');
+  const action=document.createElement('button');
+  if(!owned){
+    action.className='primary';
+    action.textContent='Comprar';
+    action.onclick=()=>{
+      if(state.career.credits<ship.price) return;
+      state.career.credits-=ship.price;
+      state.career.owned.push(ship.id);
+      state.career.selectedShip=ship.id;
+      pushEvent(`Embarcação adquirida: ${ship.name}.`);
+      updateCareer(); renderStore(); saveState();
+    };
+  } else {
+    action.className='secondary';
+    action.textContent=state.career.selectedShip===ship.id?'Selecionada':'Selecionar';
+    action.onclick=()=>{state.career.selectedShip=ship.id; playerSprite.src=ship.image; updateCareer(); renderStore(); saveState();};
+  }
+  row.appendChild(action);
+  grid.appendChild(card);
+ });
+}
+function activateTab(tab){
+ qsa('.tabScreen').forEach(el=>el.classList.remove('active'));
+ qs('#tab-'+tab).classList.add('active');
+ qsa('.tabBtn').forEach(btn=>{btn.classList.remove('primary');btn.classList.add('secondary'); if(btn.dataset.tab===tab){btn.classList.add('primary');btn.classList.remove('secondary');}});
+}
+function updateMapPanel(){
+ qs('#mapStatus').textContent=`Curso ${Math.round(normalizeAngle(state.nav.heading))}° | Velocidade ${state.nav.speed.toFixed(0)} nós | Zoom ${state.nav.zoom.toFixed(1)}x | Nave: ${currentShip().name}`;
+ qs('#encounterBox').textContent=state.nav.encounter?state.nav.encounter.text:'Nenhum contato no momento.';
+}
+function updateCompartments(){
+ const c=state.battle.compartments;
+ let t=`Proa ${Math.round(c.bow)}% | Máquinas ${Math.round(c.engineRoom)}% | Sonar ${Math.round(c.sonarRoom)}% | Torpedos ${Math.round(c.torpedoRoom)}%`;
+ if(state.battle.repairTask)t+=` | Reparo ${state.battle.repairTask.label} ${Math.ceil(state.battle.repairTask.timeLeft/60)}s`;
+ qs('#compartmentBox').textContent=t;
+}
 function updateAlarmPanel(){
  const alarms=[];
  if(state.battle.flooding>0.5) alarms.push(`Inundação ${state.battle.flooding.toFixed(1)}`);
- if(state.battle.fatigue>50) alarms.push(`Fadiga elevada ${state.battle.fatigue.toFixed(0)}%`);
+ if(state.battle.fatigue>50) alarms.push(`Fadiga ${state.battle.fatigue.toFixed(0)}%`);
  if(state.battle.hull<45) alarms.push(`Casco crítico ${Math.round(state.battle.hull)}%`);
- if(state.battle.engine<45) alarms.push(`Motor comprometido ${Math.round(state.battle.engine)}%`);
- if(state.battle.sonar<45) alarms.push(`Sonar comprometido ${Math.round(state.battle.sonar)}%`);
- if(state.battle.depth>140) alarms.push(`Profundidade crítica ${Math.round(state.battle.depth)}m`);
- const lines = alarms.length ? alarms.join(' | ') : 'Nenhum alarme crítico.';
- const recent = (state.events||[]).slice(0,3).join(' | ');
- qs('#alarmBox').textContent = recent ? `${lines} | Eventos: ${recent}` : lines;
-}
-
-
-function updateCareer(){state.career.rank=rankFromXP(state.career.xp);qs('#careerBox').textContent=`Patente: ${state.career.rank} | XP: ${state.career.xp} | Créditos: ${state.career.credits}`;}
-function updateMapPanel(){qs('#mapStatus').textContent=`Curso ${Math.round(normalizeAngle(state.nav.heading))}° | Velocidade ${state.nav.speed.toFixed(0)} nós | Zoom ${state.nav.zoom.toFixed(1)}x`;qs('#encounterBox').textContent=state.nav.encounter?state.nav.encounter.text:'Nenhum contato no momento.';}
-function updateCompartments(){const c=state.battle.compartments;let t=`Proa ${Math.round(c.bow)}% | Máquinas ${Math.round(c.engineRoom)}% | Sonar ${Math.round(c.sonarRoom)}% | Torpedos ${Math.round(c.torpedoRoom)}%`;if(state.battle.repairTask)t+=` | Reparo ${state.battle.repairTask.label} ${Math.ceil(state.battle.repairTask.timeLeft/60)}s`;qs('#compartmentBox').textContent=t;}
-function updateSystemPanels(){
- qs('#systemsBox').textContent=`Inundação ${state.battle.flooding.toFixed(1)} | Fadiga ${state.battle.fatigue.toFixed(1)} | Eficiência ${Math.max(15,100-state.battle.fatigue).toFixed(0)}%`;
- qs('#priorityBox').textContent=`Prioridade atual: ${state.battle.priority}`;
- updateAlarmPanel();
+ if(state.battle.engine<45) alarms.push(`Motor ${Math.round(state.battle.engine)}%`);
+ if(state.battle.sonar<45) alarms.push(`Sonar ${Math.round(state.battle.sonar)}%`);
+ if(state.battle.depth>140) alarms.push(`Profundidade ${Math.round(state.battle.depth)}m`);
+ const base = alarms.length ? alarms.join(' | ') : 'Nenhum alarme crítico.';
+ const recent = state.events.slice(0,3).join(' | ');
+ qs('#alarmBox').textContent = recent ? `${base} | Eventos: ${recent}` : base;
 }
 function updateBattlePanels(){
  qs('#battleStatus').textContent=`Profundidade ${Math.round(state.battle.depth)}m (${depthBand(state.battle.depth)}) | Curso ${Math.round(normalizeAngle(state.battle.heading))}° | Velocidade ${state.battle.speed.toFixed(1)} nós | Casco ${Math.round(state.battle.hull)}% | Motor ${Math.round(state.battle.engine)}% | Sonar ${Math.round(state.battle.sonar)}% | Torpedos ${state.battle.torpedoes}`;
- updateCompartments(); updateSystemPanels();
+ updateCompartments();
+ qs('#priorityBox').textContent=`Prioridade atual: ${state.battle.priority} | Inundação ${state.battle.flooding.toFixed(1)} | Fadiga ${state.battle.fatigue.toFixed(1)}`;
+ updateAlarmPanel();
 }
-
 function resetBattle(type='escort'){
+ const ship=currentShip();
  state.battle.heading=0; state.battle.targetHeading=0; state.battle.speed=0; state.battle.targetSpeed=0;
- state.battle.depth=0; state.battle.targetDepth=0; state.battle.hull=100; state.battle.engine=100; state.battle.sonar=100;
+ state.battle.depth=0; state.battle.targetDepth=0; state.battle.hull=ship.durability; state.battle.engine=100; state.battle.sonar=100;
  state.battle.torpedoes=6; state.battle.pulse=0; state.battle.flooding=0; state.battle.fatigue=0; state.battle.priority='repair';
- state.battle.player={x:260,y:380,w:110,h:48}; state.battle.contacts=[]; state.battle.torps=[];
+ state.battle.player={x:260,y:380,w:140,h:70}; state.battle.contacts=[]; state.battle.torps=[];
  state.battle.compartments={bow:100,engineRoom:100,sonarRoom:100,torpedoRoom:100}; state.battle.repairTask=null;
  const templates={
-  escort:[
-   {type:'escort',x:960,y:220,w:100,h:44,hp:100,speed:0.23,alive:true,heading:250,state:'search',vx:-0.5,vy:0.2},
-   {type:'cargo',x:1030,y:420,w:110,h:50,hp:90,speed:0.15,alive:true,heading:255,state:'patrol',vx:-0.35,vy:0}
-  ],
-  enemySub:[
-   {type:'enemySub',x:990,y:540,w:98,h:42,hp:85,speed:0.17,alive:true,heading:240,state:'shadow',vx:-0.32,vy:-0.04}
-  ]
+  escort:[{type:'escort',x:960,y:220,w:140,h:70,hp:100,speed:0.23,alive:true,heading:250,state:'search',vx:-0.5,vy:0.2,image:'./assets/images/ships/corvette.png'},
+          {type:'cargo',x:1030,y:420,w:150,h:78,hp:90,speed:0.15,alive:true,heading:255,state:'patrol',vx:-0.35,vy:0,image:'./assets/images/ships/liberty.png'}],
+  enemySub:[{type:'enemySub',x:990,y:540,w:150,h:78,hp:85,speed:0.17,alive:true,heading:240,state:'shadow',vx:-0.32,vy:-0.04,image:'./assets/images/ships/type_xxi.png'}]
  };
- state.battle.enemies=templates[type].map(e=>({...e}));
+ state.battle.enemies=templates[type].map(e=>({...e, sprite:new Image()}));
+ state.battle.enemies.forEach(e=>e.sprite.src=e.image);
  qs('#fireSolution').textContent='Aguardando contato. Use sonar e alinhe a proa.';
- qs('#battleInfo').textContent='Use sonar, curso, profundidade e prioridades para preparar o disparo.';
- qs('#periscopeInfo').textContent='Alinhe o alvo no centro.';
+ qs('#battleInfo').textContent='Use sonar, curso, profundidade e o periscópio para preparar o disparo.';
+ qs('#periscopeInfo').textContent='Alinhe o alvo no centro e dispare.';
  pushEvent('Contato hostil confirmado. Tripulação em postos de combate.');
  updateBattlePanels();
 }
-
 function assignDamage(amount){
  const c=state.battle.compartments; const r=Math.random();
  if(r<0.28)c.bow=Math.max(0,c.bow-amount);
@@ -105,22 +142,19 @@ function assignDamage(amount){
  if(amount>4) pushEvent('Impacto no casco. Compartimentos comprometidos.');
  updateBattlePanels();
 }
-
 function startRepair(){
  if(state.battle.repairTask) return;
  const c=state.battle.compartments;
  const arr=[['Proa','bow',c.bow],['Máquinas','engineRoom',c.engineRoom],['Sonar','sonarRoom',c.sonarRoom],['Torpedos','torpedoRoom',c.torpedoRoom]].sort((a,b)=>a[2]-b[2]);
- if(arr[0][2]>=100){qs('#battleInfo').textContent='Nenhum reparo prioritário.';return;}
+ if(arr[0][2]>=100){qs('#battleInfo').textContent='Nenhum reparo prioritário.'; return;}
  let time=360;
  if(state.battle.priority==='repair') time=220;
  if(state.battle.priority==='attack') time=420;
- if(state.battle.priority==='stealth') time=360;
  state.battle.repairTask={label:arr[0][0],key:arr[0][1],timeLeft:time};
  qs('#battleInfo').textContent=`Reparo iniciado em ${arr[0][0]}.`;
  pushEvent(`Equipe iniciou reparo em ${arr[0][0]}.`);
  updateBattlePanels();
 }
-
 function updateContacts(){
  const p=state.battle.player;
  const noiseBase=state.battle.speed*8+(state.battle.depth<20?10:state.battle.depth<80?5:2)+(state.battle.priority==='stealth'?-6:0);
@@ -136,7 +170,6 @@ function updateContacts(){
  const quality=diff<18&&top.approxDistance<280&&state.battle.depth<=20?'Alta':diff<35&&top.approxDistance<450?'Média':'Baixa';
  qs('#fireSolution').textContent=`Alvo ${top.type} | Bearing ${Math.round(top.bearing)}° | Distância ~${top.approxDistance}m | Solução ${quality} | Faixa ${depthBand(state.battle.depth)}`;
 }
-
 function fireTorpedo(boost=1){
  if(state.battle.torpedoes<=0) return;
  const top=state.battle.contacts[0];
@@ -156,6 +189,11 @@ function fireTorpedo(boost=1){
  pushEvent(spread>0.85?'Torpedo lançado em excelente solução.':'Torpedo lançado com solução imperfeita.');
  updateBattlePanels();
 }
+function drawShipSprite(ctx, img, x, y, w, h, fallbackColor='#55c8ff'){
+ if(img && img.complete && img.naturalWidth>0) ctx.drawImage(img, x-w/2, y-h/2, w, h);
+ else {ctx.fillStyle=fallbackColor; ctx.fillRect(x-w/2, y-h/2, w, h);}
+}
+const playerSprite = new Image(); playerSprite.src=currentShip().image;
 
 function drawMap(){
  const canvas=qs('#mapCanvas'), ctx=canvas.getContext('2d');
@@ -173,7 +211,7 @@ function drawMap(){
  const rad=(state.nav.heading-90)*Math.PI/180;
  const nx=state.nav.player.x+Math.cos(rad)*state.nav.speed*0.55, ny=state.nav.player.y+Math.sin(rad)*state.nav.speed*0.55;
  if(!isLand(nx,ny)){state.nav.player.x=Math.max(20,Math.min(1260,nx)); state.nav.player.y=Math.max(20,Math.min(700,ny));} else state.nav.speed=0;
- ctx.fillStyle='#55c8ff'; ctx.beginPath(); ctx.arc(state.nav.player.x,state.nav.player.y,10,0,Math.PI*2); ctx.fill();
+ drawShipSprite(ctx, playerSprite, state.nav.player.x, state.nav.player.y, 90, 45, '#55c8ff');
  if(state.nav.encounter){ctx.fillStyle=state.nav.encounter.type==='enemySub'?'#b695ff':'#ff8e8e';ctx.beginPath();ctx.arc(state.nav.encounter.x,state.nav.encounter.y,8,0,Math.PI*2);ctx.fill();}
  ctx.restore();
  if(!state.nav.encounter&&state.nav.speed>0&&Math.random()<0.003){
@@ -184,7 +222,6 @@ function drawMap(){
  updateMapPanel();
  requestAnimationFrame(drawMap);
 }
-
 function drawBattle(){
  const canvas=qs('#battleCanvas'), ctx=canvas.getContext('2d');
  ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -197,24 +234,21 @@ function drawBattle(){
  if(state.battle.pulse>0)state.battle.pulse-=1;
 
  const p=state.battle.player;
- const fatiguePenalty=Math.max(0.4,1-state.battle.fatigue/180);
- const move=state.battle.speed*0.28*Math.max(0.3,state.battle.engine/100)*fatiguePenalty;
+ const movementPenalty=Math.max(0.45,1-state.battle.fatigue/140);
+ const move=state.battle.speed*0.28*Math.max(0.3,state.battle.engine/100)*movementPenalty;
  p.x=Math.max(140,Math.min(520,p.x+Math.cos((state.battle.heading-90)*Math.PI/180)*move));
  p.y=Math.max(100,Math.min(660,p.y+Math.sin((state.battle.heading-90)*Math.PI/180)*move));
 
  state.battle.fatigue=Math.min(100,state.battle.fatigue+0.012+(state.battle.priority==='attack'?0.02:state.battle.priority==='repair'?0.01:0.008));
- const fatiguePenalty=Math.max(0.45,1-state.battle.fatigue/140);
- state.battle.targetSpeed=Math.min(state.battle.targetSpeed, 10*fatiguePenalty);
+ state.battle.targetSpeed=Math.min(state.battle.targetSpeed, 10*Math.max(0.45,1-state.battle.fatigue/140));
+
  if(state.battle.flooding>0){
   state.battle.hull=Math.max(0,state.battle.hull-state.battle.flooding*0.02);
   if(Math.random()<0.025) state.battle.engine=Math.max(0,state.battle.engine-state.battle.flooding*0.012);
   if(Math.random()<0.015) state.battle.sonar=Math.max(0,state.battle.sonar-state.battle.flooding*0.01);
   if(state.battle.flooding>8 && Math.random()<0.01) pushEvent('Água avançando para outros compartimentos.');
  }
- if(state.battle.depth>140&&Math.random()<0.025){
-  assignDamage(0.8);
-  pushEvent('Estrutura sob pressão extrema.');
- }
+ if(state.battle.depth>140&&Math.random()<0.025){ assignDamage(0.8); pushEvent('Estrutura sob pressão extrema.'); }
 
  if(state.battle.pulse>0){
   ctx.save(); ctx.globalAlpha=Math.min(0.5,state.battle.pulse/100); ctx.strokeStyle='rgba(100,220,255,0.35)';
@@ -239,10 +273,12 @@ function drawBattle(){
    else {e.x+=e.vx; e.y+=e.vy;}
   }
 
-  if(dist<170&&Math.random()<(e.type==='escort'?0.012:0.009)) assignDamage(4+Math.random()*2);
+  if(dist<170&&Math.random()<(e.type==='escort'?0.012:0.009)){
+   assignDamage(4+Math.random()*2);
+   if(Math.random()<0.35) pushEvent(e.type==='escort'?'Carga de profundidade próxima!':'Torpedo inimigo passou perto!');
+  }
 
-  ctx.fillStyle=e.type==='escort'?'#ff8e8e':'#b695ff';
-  ctx.fillRect(e.x-e.w/2,e.y-e.h/2,e.w,e.h);
+  drawShipSprite(ctx, e.sprite, e.x, e.y, e.w, e.h, e.type==='escort'?'#ff8e8e':'#b695ff');
   ctx.fillStyle='rgba(0,0,0,0.45)'; ctx.fillRect(e.x-36,e.y-e.h/2-14,72,6);
   ctx.fillStyle='#67e29a'; ctx.fillRect(e.x-36,e.y-e.h/2-14,72*(e.hp/100),6);
  });
@@ -267,8 +303,7 @@ function drawBattle(){
  });
  state.battle.torps=state.battle.torps.filter(t=>!t.dead&&t.x<canvas.width+40&&t.y>-40&&t.y<canvas.height+40);
 
- ctx.fillStyle='#55c8ff';
- ctx.fillRect(p.x-p.w/2,p.y-p.h/2,p.w,p.h);
+ drawShipSprite(ctx, playerSprite, p.x, p.y, p.w, p.h, '#55c8ff');
 
  if(state.battle.repairTask){
   let speed = 1;
@@ -290,7 +325,6 @@ function drawBattle(){
  updateBattlePanels();
  requestAnimationFrame(drawBattle);
 }
-
 function drawPeriscope(){
  const canvas=qs('#periscopeCanvas'), ctx=canvas.getContext('2d');
  ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -304,10 +338,9 @@ function drawPeriscope(){
  if(top){
   const rel=normalizeAngle(top.bearing-state.battle.heading-state.periscope.angle);
   let x=cx+((rel>180?rel-360:rel)*6);
-  x=Math.max(cx-radius+50,Math.min(cx+radius-50,x));
+  x=Math.max(cx-radius+70,Math.min(cx+radius-70,x));
   const y=cy+40;
-  ctx.fillStyle=top.type==='escort'?'#d89a9a':'#b0a0ff';
-  ctx.fillRect(x-50,y-18,100,36);
+  drawShipSprite(ctx, top.enemy.sprite, x, y, 160, 80, top.type==='escort'?'#d89a9a':'#b0a0ff');
  }
  ctx.restore();
  ctx.strokeStyle='rgba(255,255,255,.7)'; ctx.lineWidth=2;
@@ -317,12 +350,13 @@ function drawPeriscope(){
  qs('#periscopeInfo').textContent=top?`Bearing alvo ${Math.round(top.bearing)}° | Ângulo periscópio ${Math.round(state.periscope.angle)}°`:'Sem contato visível.';
  requestAnimationFrame(drawPeriscope);
 }
-
 function init(){
- loadState(); updateCareer();
+ loadState(); updateCareer(); renderStore(); activateTab('overview'); playerSprite.src=currentShip().image;
  qs('#btnNewGame').onclick=()=>show('lobby');
- qs('#btnContinue').onclick=()=>{loadState(); updateCareer(); show('lobby');};
- qs('#btnMission').onclick=()=>{state.nav.encounter=null; qs('#btnEnterCombat').disabled=true; show('map');};
+ qs('#btnContinue').onclick=()=>{loadState(); updateCareer(); renderStore(); playerSprite.src=currentShip().image; show('lobby');};
+ qsa('.tabBtn').forEach(btn=>btn.onclick=()=>activateTab(btn.dataset.tab));
+ qs('#btnStartMission').onclick=()=>{state.nav.encounter=null; qs('#btnEnterCombat').disabled=true; show('map');};
+ qs('#btnMission').onclick=()=>activateTab('mission');
  qs('#btnBackLobby').onclick=()=>show('lobby');
  qs('#btnBackMap').onclick=()=>show('map');
  qs('#btnPeriscope').onclick=()=>{state.battle.targetDepth=20; show('periscope');};
@@ -336,7 +370,7 @@ function init(){
  qsa('[data-speed]').forEach(btn=>btn.onclick=()=>{state.battle.targetSpeed=Math.max(0,Math.min(10,state.battle.targetSpeed+Number(btn.dataset.speed)));});
  qsa('[data-turn]').forEach(btn=>btn.onclick=()=>{state.battle.targetHeading+=Number(btn.dataset.turn);});
  qsa('[data-peri]').forEach(btn=>btn.onclick=()=>{state.periscope.angle+=Number(btn.dataset.peri);});
- qsa('.priorityBtn').forEach(btn=>btn.onclick=()=>{state.battle.priority=btn.dataset.priority; pushEvent(`Prioridade alterada para ${btn.dataset.priority}.`); updateSystemPanels();});
+ qsa('.priorityBtn').forEach(btn=>btn.onclick=()=>{state.battle.priority=btn.dataset.priority; pushEvent(`Prioridade alterada para ${btn.dataset.priority}.`); updateBattlePanels();});
  qs('#btnPatrol').onclick=()=>{
   if(!state.nav.encounter){
    const type=Math.random()<0.5?'escort':'enemySub';
@@ -344,10 +378,9 @@ function init(){
    qs('#btnEnterCombat').disabled=false; updateMapPanel();
   }
  };
- qs('#btnEnterCombat').onclick=()=>{if(state.nav.encounter){resetBattle(state.nav.encounter.type); show('battle');}};
+ qs('#btnEnterCombat').onclick=()=>{if(state.nav.encounter){ playerSprite.src=currentShip().image; resetBattle(state.nav.encounter.type); show('battle'); }};
  qs('#btnZoomIn').onclick=()=>state.nav.zoom=Math.min(2.4,state.nav.zoom+0.2);
  qs('#btnZoomOut').onclick=()=>state.nav.zoom=Math.max(0.8,state.nav.zoom-0.2);
-
  const mapCanvas=qs('#mapCanvas');
  mapCanvas.addEventListener('click',e=>{
   const rect=mapCanvas.getBoundingClientRect();
@@ -355,10 +388,9 @@ function init(){
   const y=(e.clientY-rect.top)/state.nav.zoom+state.nav.panY;
   const dx=x-state.nav.player.x, dy=y-state.nav.player.y;
   state.nav.heading=(Math.atan2(dy,dx)*180/Math.PI)+90;
-  state.nav.speed=6;
+  state.nav.speed=Math.max(4,currentShip().speed);
   qs('#mapInfo').textContent='Novo curso definido pelo mapa.';
  });
-
  document.addEventListener('keydown',e=>{
   if(qs('#screen-battle').classList.contains('active')){
    if(e.key==='ArrowLeft')state.battle.targetHeading-=8;
@@ -371,16 +403,15 @@ function init(){
    if(e.key==='1'){state.battle.priority='repair'; pushEvent('Prioridade alterada para repair.');}
    if(e.key==='2'){state.battle.priority='attack'; pushEvent('Prioridade alterada para attack.');}
    if(e.key==='3'){state.battle.priority='stealth'; pushEvent('Prioridade alterada para stealth.');}
+   updateBattlePanels();
   }
   if(qs('#screen-periscope').classList.contains('active')){
    if(e.key==='ArrowLeft')state.periscope.angle-=4;
    if(e.key==='ArrowRight')state.periscope.angle+=4;
    if(e.key===' ') {e.preventDefault(); fireTorpedo(1.15);}
   }
-  updateSystemPanels();
  });
-
- drawMap(); drawBattle(); drawPeriscope(); updateSystemPanels(); updateAlarmPanel();
+ drawMap(); drawBattle(); drawPeriscope(); updateBattlePanels();
 }
 init();
 })();

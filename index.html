@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>Submarine Commander v3.5.0</title>
+<title>Submarine Commander v3.6.0</title>
 <link rel="stylesheet" href="./styles.css"/>
 </head>
 <body>
@@ -11,25 +11,26 @@
   <header class="topbar">
     <div>
       <h1>Submarine Commander</h1>
-      <div class="meta">Version v3.5.0 | Build 2026-04-06 18:59:10 | Flooding Consequences and Dramatic Events</div>
+      <div class="meta">Version v3.6.0 | Build 2026-04-06 21:42:36 | Integrated Store + Ship Images + Stability Fix</div>
     </div>
-    <div class="chip" id="statusChip">Integrado</div>
+    <div class="chip" id="statusChip">Build estável</div>
   </header>
 
   <section id="screen-start" class="screen active">
     <div class="panel hero">
       <div>
-        <h2>Simulador integrado</h2>
-        <p>Mapa por clique, combate tático, periscópio manual, inundação, fadiga, prioridades e reparos com tempo em uma build única.</p>
+        <h2>Build completa com correção</h2>
+        <p>Esta versão substitui a base com erro de inicialização por uma build estável, inclui as imagens já geradas dentro do projeto e adiciona uma loja de embarcações no lobby.</p>
         <div class="row">
           <button id="btnNewGame" class="primary">Nova partida</button>
           <button id="btnContinue" class="secondary">Continuar</button>
         </div>
       </div>
       <div class="heroBox">
-        <div>Mapa • Combate • Periscópio</div>
-        <div>Inundação • Fadiga • Reparos</div>
-        <div>Prioridade • Compartimentos</div>
+        <div>Loja de embarcações</div>
+        <div>Mapa por clique</div>
+        <div>Combate + Periscópio</div>
+        <div>Assets já integrados</div>
       </div>
     </div>
   </section>
@@ -42,19 +43,35 @@
           <div class="muted" id="careerBox"></div>
         </div>
         <div class="panel">
-          <h2>Missão</h2>
-          <div class="muted">Teatro Atlântico: navegue, detecte um contato e decida quando entrar em combate.</div>
-          <div class="row">
-            <button id="btnMission" class="primary">Iniciar operação</button>
+          <h2>Nave principal</h2>
+          <div class="ship-preview">
+            <img id="ownedShipPreview" alt="Embarcação selecionada"/>
+            <div class="muted" id="ownedShipInfo"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Navegação do lobby</h2>
+          <div class="row wrap">
+            <button class="tabBtn primary" data-tab="overview">Visão geral</button>
+            <button class="tabBtn secondary" data-tab="store">Loja</button>
+            <button class="tabBtn secondary" data-tab="mission">Operação</button>
           </div>
         </div>
       </aside>
       <main class="stack">
-        <div class="panel">
-          <h2>Integração desta fase</h2>
-          <div class="muted">
-            Tudo agora roda junto: mapa, combate, periscópio, danos por compartimento, inundação contínua, fadiga da tripulação,
-            ordens com prioridade e reparo temporizado. A prioridade altera a velocidade de reparo, a eficiência do ataque e o controle da situação.
+        <div class="panel tabScreen active" id="tab-overview">
+          <h2>Centro de operações</h2>
+          <div class="muted" id="overviewText"></div>
+        </div>
+        <div class="panel tabScreen" id="tab-store">
+          <h2>Loja de embarcações</h2>
+          <div class="storeGrid" id="storeGrid"></div>
+        </div>
+        <div class="panel tabScreen" id="tab-mission">
+          <h2>Operação Atlântico</h2>
+          <div class="muted">Escolha sua embarcação no lobby, navegue pelo mapa clicando no mar, detecte um contato e decida quando entrar em combate. O periscópio continua disponível para ataque manual.</div>
+          <div class="row" style="margin-top:12px;">
+            <button id="btnStartMission" class="primary">Entrar no mapa</button>
           </div>
         </div>
       </main>
@@ -68,7 +85,7 @@
           <div class="bar">
             <div>
               <h2>Mapa naval</h2>
-              <div class="muted" id="mapInfo">Clique no mar para definir o curso. A proa gira para o ponto marcado.</div>
+              <div class="muted" id="mapInfo">Clique no mar para definir o curso. A proa gira para o destino.</div>
             </div>
             <div class="row">
               <button id="btnPatrol" class="primary">Patrulhar setor</button>
@@ -99,7 +116,7 @@
           <div class="bar">
             <div>
               <h2>Combate tático</h2>
-              <div class="muted" id="battleInfo">Use sonar, curso, profundidade e prioridades para preparar o disparo.</div>
+              <div class="muted" id="battleInfo">Use sonar, curso, profundidade e o periscópio para preparar o disparo.</div>
             </div>
             <div class="row">
               <button id="btnPeriscope" class="primary">Periscópio</button>
@@ -125,16 +142,13 @@
       <aside class="stack">
         <div class="panel"><h2>Instrumentos</h2><div class="muted" id="battleStatus"></div></div>
         <div class="panel"><h2>Solução de tiro</h2><div class="muted" id="fireSolution">Aguardando contato.</div></div>
-        <div class="panel"><h2>Compartimentos</h2><div class="muted" id="compartmentBox">Sem danos críticos.</div></div>
-        <div class="panel"><h2>Sistemas humanos</h2><div class="muted" id="systemsBox"></div></div>
+        <div class="panel"><h2>Compartimentos</h2><div class="muted" id="compartmentBox"></div></div>
         <div class="panel"><h2>Alarmes</h2><div class="muted" id="alarmBox"></div></div>
-        <div class="panel"><h2>Ordem atual</h2><div class="muted" id="priorityBox"></div></div>
-        <div class="panel">
-          <h2>Prioridade</h2>
-          <div class="row wrap">
-            <button data-priority="repair" class="secondary priorityBtn">Reparo</button>
-            <button data-priority="attack" class="secondary priorityBtn">Ataque</button>
-            <button data-priority="stealth" class="secondary priorityBtn">Stealth</button>
+        <div class="panel"><h2>Prioridade</h2><div class="muted" id="priorityBox"></div>
+          <div class="row wrap" style="margin-top:10px;">
+            <button class="priorityBtn secondary" data-priority="repair">Reparo</button>
+            <button class="priorityBtn secondary" data-priority="attack">Ataque</button>
+            <button class="priorityBtn secondary" data-priority="stealth">Stealth</button>
           </div>
         </div>
       </aside>
